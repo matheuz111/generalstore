@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* ================================
+   FUENTES KIDSTORE
+================================ */
+
+@font-face {
+  font-family: "BurbankBig";
+  src: url("/fonts/BurbankBigRegular-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BurbankSmall";
+  src: url("/fonts/BurbankSmall-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BurbankSmall";
+  src: url("/fonts/BurbankSmall-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BurbankSmall";
+  src: url("/fonts/BurbankSmall-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ================================
+   BASE GLOBAL
+================================ */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
+  font-family: "BurbankSmall", system-ui, sans-serif;
+}
