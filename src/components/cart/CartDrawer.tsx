@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   open: boolean;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const CartDrawer = ({ open, onClose }: Props) => {
+  const navigate = useNavigate();
   const {
     cartItems,
     removeFromCart,
@@ -14,6 +16,11 @@ const CartDrawer = ({ open, onClose }: Props) => {
     decreaseQuantity,
     clearCart,
   } = useCart();
+
+  const handleCheckout = () => {
+    onClose();
+    navigate("/checkout");
+  }
 
   const total: number = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -143,6 +150,7 @@ const CartDrawer = ({ open, onClose }: Props) => {
                   </p>
 
                   <button
+                    onClick={handleCheckout}
                     className="mt-5 w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition rounded-lg py-3 font-semibold shadow-lg shadow-blue-600/30 cursor-pointer"
                   >
                     Proceder al Pago

@@ -6,7 +6,10 @@ import { useState } from "react";
 import PaymentMethods from "../components/checkout/PaymentMethods";
 import PaymentInstructions from "../components/checkout/PaymentInstructions";
 
+const SERVERS = ["America", "Europe", "Asia", "Taiwan"];
+
 const Checkout = () => {
+
   const { cartItems, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -171,24 +174,31 @@ const Checkout = () => {
         />
 
         {/* ================= CAMPOS DINÁMICOS ================= */}
-        {needsUID && (
-          <>
-            <input
-              value={uid}
-              onChange={(e) => setUid(e.target.value)}
-              placeholder="UID del jugador"
-              className="w-full bg-black/40 px-4 py-3 rounded-lg"
-            />
+          {needsUID && (
+            <>
+              <input
+                value={uid}
+                onChange={(e) => setUid(e.target.value)}
+                placeholder="UID del jugador"
+                className="w-full bg-black/40 px-4 py-3 rounded-lg"
+              />
 
-            <input
-              value={server}
-              onChange={(e) => setServer(e.target.value)}
-              placeholder="Servidor"
-              className="w-full bg-black/40 px-4 py-3 rounded-lg"
-            />
-          </>
-        )}
-
+              {/* Reemplazo del input de Servidor por un Select */}
+              <select
+                value={server}
+                onChange={(e) => setServer(e.target.value)}
+                className="w-full bg-black/40 px-4 py-3 rounded-lg text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>Selecciona tu servidor</option>
+                {SERVERS.map((s) => (
+                  <option key={s} value={s} className="bg-[#0b1120]">
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+          
         {needsGamePass && (
           <input
             value={gamePassLink}

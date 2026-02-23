@@ -1,10 +1,33 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useCurrency } from "../../context/CurrencyContext"; // Asegúrate de tener este import
 
 interface HeaderProps {
   onCartClick: () => void;
 }
 
+// 1. Definimos el CurrencySelector sin el 'export default'
+const CurrencySelector = () => {
+  const { currency, setCurrency } = useCurrency();
+
+  return (
+    <div className="flex bg-black/40 p-1 rounded-lg border border-white/10">
+      {(["PEN", "USD", "EUR"] as const).map((curr) => (
+        <button
+          key={curr}
+          onClick={() => setCurrency(curr)}
+          className={`px-3 py-1 rounded-md text-xs font-bold transition ${
+            currency === curr ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"
+          }`}
+        >
+          {curr}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// 2. Componente Header principal
 const Header = ({ onCartClick }: HeaderProps) => {
   const { cartItems } = useCart();
 
@@ -31,7 +54,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
           <span
             className="text-[2.75rem] font-black tracking-[0.15em] uppercase leading-none"
-            style={{ fontFamily: "BurbankBig" }}
+            style={{ fontFamily: "'Rubik Spray Paint', system-ui" }} // Cambio de BurbankBig a Rubik Spray Paint
           >
             KIDSTORE
           </span>
@@ -39,6 +62,9 @@ const Header = ({ onCartClick }: HeaderProps) => {
 
         {/* ACTIONS */}
         <div className="flex items-center gap-8 text-sm font-medium">
+
+          {/* INTEGRACIÓN: Insertamos el selector aquí */}
+          <CurrencySelector />
 
           {/* MI CUENTA */}
           <Link
@@ -69,4 +95,5 @@ const Header = ({ onCartClick }: HeaderProps) => {
   );
 };
 
+// 3. Solo un export default al final
 export default Header;

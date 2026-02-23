@@ -10,6 +10,7 @@ import Terms from "./pages/Terms";
 import CategoryLayout from "./pages/CategoryLayout";
 
 /* ================= CATEGORÍAS ================= */
+import Fortnite from "./pages/Fortnite";
 import WildRift from "./pages/WildRift";
 import Roblox from "./pages/Roblox";
 import Marvel from "./pages/Marvel";
@@ -67,6 +68,7 @@ const App = () => {
           />
 
           {/* ================= CATEGORÍAS ================= */}
+          <Route path="/fortnite" element={<Fortnite />} />
           <Route path="/wild-rift" element={<WildRift />} />
           <Route path="/roblox" element={<Roblox />} />
           <Route path="/marvel-rivals" element={<Marvel />} />
