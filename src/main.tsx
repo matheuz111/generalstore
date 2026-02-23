@@ -1,24 +1,23 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+// src/main.tsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
+import { BrowserRouter } from 'react-router-dom'
+import { CartProvider } from './context/CartContext.tsx'
+import { CurrencyProvider } from './context/CurrencyContext.tsx'
+import { AuthProvider } from './context/AuthContext.tsx'
 
-import App from "./App";
-import "./index.css";
-
-import { CartProvider } from "./context/CartContext";
-import { AuthProvider } from "./context/AuthContext";
-import { CurrencyProvider } from "./context/CurrencyContext";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
+      <AuthProvider> {/* La autenticación debe estar afuera para proteger rutas */}
+      <CartProvider> {/* El carrito debe estar afuera */}
         <CurrencyProvider>
-          <CartProvider>
-            <App />
-          </CartProvider>
+          <App />
         </CurrencyProvider>
+      </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
-);
+)

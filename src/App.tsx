@@ -31,8 +31,6 @@ import AccountRegister from "./pages/account/AccountRegister";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 
-
-
 const App = () => {
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -42,7 +40,7 @@ const App = () => {
       <Header onCartClick={() => setCartOpen(true)} />
 
       {/* ================= CONTENIDO ================= */}
-      <main className="pt-24 min-h-screen bg-gradient-to-b from-[#050816] via-[#070c1f] to-[#03050f]">
+      <main className="pt-24 min-h-screen bg-transparent">
         <Routes>
           {/* HOME */}
           <Route path="/" element={<Home />} />

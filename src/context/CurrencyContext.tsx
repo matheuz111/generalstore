@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { useCart } from "./CartContext"; 
 
 type Currency = "PEN" | "USD" | "EUR";
 
@@ -9,26 +10,40 @@ interface CurrencyContextType {
   convertVbucks: (vbucks: number) => number;
 }
 
-const RATES = { PEN: 0.015, USD: 0.0045, EUR: 0.004 }; // Basado en pricing.js
+const RATES = { PEN: 0.015, USD: 0.0045, EUR: 0.004 }; 
 const SYMBOLS = { PEN: "S/", USD: "$", EUR: "€" };
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrency] = useState<Currency>("PEN");
+  const [currency, setCurrency] = useState<Currency>("PEN")
+  const { clearCart } = useCart() // Ahora funcionará correctamente
 
-  const convertVbucks = (vbucks: number) => vbucks * RATES[currency];
+  const handleCurrencyChange = (newCurrency: Currency) => {
+    if (newCurrency === currency) return
+
+    const confirmed = window.confirm(
+      `¿Cambiar a ${newCurrency}? Se vaciará el carrito para actualizar los precios.`
+    )
+
+    if (confirmed) {
+      setCurrency(newCurrency)
+      clearCart() // Evita que un precio de 100 PEN se convierta en 100 USD
+    }
+  }
+
+  const convertVbucks = (vbucks: number) => vbucks * RATES[currency]
 
   const formatPrice = (vbucks: number) => {
-    const total = convertVbucks(vbucks);
-    return `${SYMBOLS[currency]} ${total.toFixed(2)}`;
-  };
+    const total = convertVbucks(vbucks)
+    return `${SYMBOLS[currency]} ${total.toFixed(2)}`
+  }
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertVbucks }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency: handleCurrencyChange, formatPrice, convertVbucks }}>
       {children}
     </CurrencyContext.Provider>
-  );
+  )
 };
 
 export const useCurrency = () => {
