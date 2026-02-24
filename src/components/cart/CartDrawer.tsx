@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../context/CartContext";
+import { useCurrency } from "../../context/CurrencyContext";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -17,10 +18,19 @@ const CartDrawer = ({ open, onClose }: Props) => {
     clearCart,
   } = useCart();
 
+  const { currency } = useCurrency();
+
+  // Símbolo según moneda activa
+  const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
+  const symbol = SYMBOLS[currency] ?? "S/";
+
+  const formatPrice = (price: number) =>
+    `${symbol} ${price.toFixed(2)}`;
+
   const handleCheckout = () => {
     onClose();
     navigate("/checkout");
-  }
+  };
 
   const total: number = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -88,7 +98,7 @@ const CartDrawer = ({ open, onClose }: Props) => {
                     >
                       {/* IMAGEN */}
                       <img
-                        src={item.image}
+                        src={item.image || "/images/placeholder.png"}
                         alt={item.name}
                         className="w-20 h-28 object-contain rounded-md bg-black/30 p-1"
                       />
@@ -124,7 +134,7 @@ const CartDrawer = ({ open, onClose }: Props) => {
 
                         {/* PRECIO */}
                         <p className="text-blue-400 font-semibold mt-3">
-                          S/ {(item.price * item.quantity).toFixed(2)}
+                          {formatPrice(item.price * item.quantity)}
                         </p>
                       </div>
 
@@ -145,7 +155,7 @@ const CartDrawer = ({ open, onClose }: Props) => {
                   <p className="text-lg font-semibold flex justify-between">
                     <span>Total:</span>
                     <span className="text-blue-400">
-                      S/ {total.toFixed(2)}
+                      {formatPrice(total)}
                     </span>
                   </p>
 

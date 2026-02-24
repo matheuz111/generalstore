@@ -1,28 +1,30 @@
 import { motion } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import CategoryShell from "../components/layout/CategoryShell";
+import { usePriceConverter } from "../hooks/usePriceConverter";
 
 const robuxDirect = [
-  { id: "rbx-80", name: "80 Robux", price: 6.9 },
-  { id: "rbx-500", name: "500 Robux", price: 18.9 },
-  { id: "rbx-1000", name: "1000 Robux", price: 37.9 },
-  { id: "rbx-2000", name: "2000 Robux", price: 75.9 },
+  { id: "rbx-80",   name: "80 Robux",   basePen: 6.9  },
+  { id: "rbx-500",  name: "500 Robux",  basePen: 18.9 },
+  { id: "rbx-1000", name: "1000 Robux", basePen: 37.9 },
+  { id: "rbx-2000", name: "2000 Robux", basePen: 75.9 },
 ];
 
 const robuxGamePass = [
-  { id: "gp-2000", name: "2000 Robux (Game Pass)", price: 64.9 },
-  { id: "gp-3000", name: "3000 Robux (Game Pass)", price: 95.9 },
-  { id: "gp-4000", name: "4000 Robux (Game Pass)", price: 114.9 },
-  { id: "gp-5000", name: "5000 Robux (Game Pass)", price: 142.9 },
-  { id: "gp-6000", name: "6000 Robux (Game Pass)", price: 169.9 },
-  { id: "gp-7000", name: "7000 Robux (Game Pass)", price: 198.9 },
-  { id: "gp-8000", name: "8000 Robux (Game Pass)", price: 226.9 },
-  { id: "gp-9000", name: "9000 Robux (Game Pass)", price: 254.9 },
-  { id: "gp-10000", name: "10000 Robux (Game Pass)", price: 283.9 },
+  { id: "gp-2000",  name: "2000 Robux (Game Pass)",  basePen: 64.9  },
+  { id: "gp-3000",  name: "3000 Robux (Game Pass)",  basePen: 95.9  },
+  { id: "gp-4000",  name: "4000 Robux (Game Pass)",  basePen: 114.9 },
+  { id: "gp-5000",  name: "5000 Robux (Game Pass)",  basePen: 142.9 },
+  { id: "gp-6000",  name: "6000 Robux (Game Pass)",  basePen: 169.9 },
+  { id: "gp-7000",  name: "7000 Robux (Game Pass)",  basePen: 198.9 },
+  { id: "gp-8000",  name: "8000 Robux (Game Pass)",  basePen: 226.9 },
+  { id: "gp-9000",  name: "9000 Robux (Game Pass)",  basePen: 254.9 },
+  { id: "gp-10000", name: "10000 Robux (Game Pass)", basePen: 283.9 },
 ];
 
 const Roblox = () => {
   const { addToCart } = useCart();
+  const { format, cartPrice, symbol } = usePriceConverter();
 
   return (
     <CategoryShell
@@ -53,7 +55,7 @@ const Roblox = () => {
               <h3 className="font-bold mb-2">{product.name}</h3>
 
               <p className="text-blue-400 text-xl font-black mb-4">
-                S/ {product.price.toFixed(2)}
+                {format(product.basePen)}
               </p>
 
               <button
@@ -61,7 +63,7 @@ const Roblox = () => {
                   addToCart({
                     id: product.id,
                     name: product.name,
-                    price: product.price,
+                    price: cartPrice(product.basePen),
                     image: "",
                   })
                 }
@@ -107,7 +109,7 @@ const Roblox = () => {
               <h3 className="font-bold mb-2">{product.name}</h3>
 
               <p className="text-blue-400 text-xl font-black mb-4">
-                S/ {product.price.toFixed(2)}
+                {format(product.basePen)}
               </p>
 
               <button
@@ -115,7 +117,7 @@ const Roblox = () => {
                   addToCart({
                     id: product.id,
                     name: product.name,
-                    price: product.price,
+                    price: cartPrice(product.basePen),
                     image: "",
                   })
                 }
@@ -133,6 +135,10 @@ const Roblox = () => {
           <li>🛡 No nos responsabilizamos por el estado o seguridad de la cuenta.</li>
         </ul>
       </section>
+
+      <div className="text-xs text-gray-500 text-right">
+        Precios en {symbol} · Moneda configurable desde el encabezado
+      </div>
     </CategoryShell>
   );
 };

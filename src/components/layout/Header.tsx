@@ -40,7 +40,7 @@ const Header = ({ onCartClick }: HeaderProps) => {
   );
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10">
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#18181C]/80 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 text-white">
 
         {/* LOGO + NAME */}

@@ -1,50 +1,22 @@
 import { motion } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import CategoryShell from "../components/layout/CategoryShell";
+import { usePriceConverter } from "../hooks/usePriceConverter";
 
 const CATEGORY = "wild-rift";
 
 const products = [
-  {
-    id: "wc-425",
-    name: "425 Wild Cores",
-    price: 15.9,
-    image: "/images/wildrift/425wc.jpg",
-  },
-  {
-    id: "wc-1000",
-    name: "1000 Wild Cores",
-    price: 28.9,
-    image: "/images/wildrift/1000wc.jpg",
-  },
-  {
-    id: "wc-1850",
-    name: "1850 Wild Cores",
-    price: 51.9,
-    image: "/images/wildrift/1850wc.jpg",
-  },
-  {
-    id: "wc-3275",
-    name: "3275 Wild Cores",
-    price: 88.9,
-    image: "/images/wildrift/3275wc.jpg",
-  },
-  {
-    id: "wc-4800",
-    name: "4800 Wild Cores",
-    price: 127.9,
-    image: "/images/wildrift/4800wc.jpg",
-  },
-  {
-    id: "wc-10000",
-    name: "10000 Wild Cores",
-    price: 235.9,
-    image: "/images/wildrift/10000wc.jpg",
-  },
+  { id: "wc-425",   name: "425 Wild Cores",   basePen: 15.9,  image: "/images/wildrift/425wc.jpg" },
+  { id: "wc-1000",  name: "1000 Wild Cores",  basePen: 28.9,  image: "/images/wildrift/1000wc.jpg" },
+  { id: "wc-1850",  name: "1850 Wild Cores",  basePen: 51.9,  image: "/images/wildrift/1850wc.jpg" },
+  { id: "wc-3275",  name: "3275 Wild Cores",  basePen: 88.9,  image: "/images/wildrift/3275wc.jpg" },
+  { id: "wc-4800",  name: "4800 Wild Cores",  basePen: 127.9, image: "/images/wildrift/4800wc.jpg" },
+  { id: "wc-10000", name: "10000 Wild Cores", basePen: 235.9, image: "/images/wildrift/10000wc.jpg" },
 ];
 
 const WildRift = () => {
   const { addToCart } = useCart();
+  const { format, cartPrice, symbol } = usePriceConverter();
 
   return (
     <CategoryShell
@@ -61,7 +33,7 @@ const WildRift = () => {
             transition={{ duration: 0.3 }}
             className="group bg-[#0f172a]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-lg"
           >
-            {/* ================= IMAGEN OPTIMIZADA ================= */}
+            {/* IMAGEN */}
             <div className="h-48 rounded-xl mb-5 overflow-hidden bg-gradient-to-b from-black/40 to-black/70 flex items-center justify-center">
               <img
                 src={product.image}
@@ -72,26 +44,23 @@ const WildRift = () => {
               />
             </div>
 
-            {/* ================= NOMBRE ================= */}
-            <h2
-              className="text-lg font-bold mb-2"
-              style={{ fontFamily: "BurbankSmall" }}
-            >
+            {/* NOMBRE */}
+            <h2 className="text-lg font-bold mb-2" style={{ fontFamily: "BurbankSmall" }}>
               {product.name}
             </h2>
 
-            {/* ================= PRECIO ================= */}
+            {/* PRECIO */}
             <p className="text-blue-400 text-2xl font-black mb-6">
-              S/ {product.price.toFixed(2)}
+              {format(product.basePen)}
             </p>
 
-            {/* ================= BOTÓN ================= */}
+            {/* BOTÓN */}
             <button
               onClick={() =>
                 addToCart({
                   id: product.id,
                   name: product.name,
-                  price: product.price,
+                  price: cartPrice(product.basePen),
                   image: product.image,
                   category: CATEGORY,
                 })
@@ -102,6 +71,10 @@ const WildRift = () => {
             </button>
           </motion.div>
         ))}
+      </div>
+
+      <div className="mt-6 text-xs text-gray-500 text-right">
+        Precios en {symbol} · Moneda configurable desde el encabezado
       </div>
     </CategoryShell>
   );

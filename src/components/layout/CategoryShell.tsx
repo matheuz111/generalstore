@@ -12,7 +12,7 @@ const CategoryShell = ({
   children,
 }: CategoryShellProps) => {
   return (
-    <div className="min-h-screen text-white bg-gradient-to-b from-[#050816] via-[#070c1f] to-[#03050f]">
+    <div className="min-h-screen text-white bg-[#18181C]">
       {/* CONTENIDO */}
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-16">
 
