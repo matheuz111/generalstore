@@ -1,6 +1,8 @@
+// src/components/cart/CartDrawer.tsx
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../../context/CartContext";
 import { useCurrency } from "../../context/CurrencyContext";
+import { useLang } from "../../context/LangContext";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
@@ -8,39 +10,21 @@ interface Props {
   onClose: () => void;
 }
 
+const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
+
 const CartDrawer = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
-  const {
-    cartItems,
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-    clearCart,
-  } = useCart();
-
+  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, clearCart } = useCart();
   const { currency } = useCurrency();
+  const { t } = useLang();
 
-  // Símbolo según moneda activa
-  const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
   const symbol = SYMBOLS[currency] ?? "S/";
+  const fmt = (n: number) => `${symbol} ${n.toFixed(2)}`;
 
-  const formatPrice = (price: number) =>
-    `${symbol} ${price.toFixed(2)}`;
+  const total      = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const totalItems = cartItems.reduce((s, i) => s + i.quantity, 0);
 
-  const handleCheckout = () => {
-    onClose();
-    navigate("/checkout");
-  };
-
-  const total: number = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  const totalItems: number = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const handleCheckout = () => { onClose(); navigate("/checkout"); };
 
   return (
     <AnimatePresence>
@@ -49,30 +33,25 @@ const CartDrawer = ({ open, onClose }: Props) => {
           {/* OVERLAY */}
           <motion.div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 cursor-pointer"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
           />
 
           {/* DRAWER */}
           <motion.aside
             className="fixed right-0 top-0 h-full w-full max-w-md bg-[#0b1120] border-l border-white/10 z-50 p-6 overflow-y-auto shadow-2xl"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 120, damping: 18 }}
           >
             {/* HEADER */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold tracking-wide">
-                🛒 Tu Carrito ({totalItems})
+                🛒 {t("cart", "title")} ({totalItems})
               </h2>
-
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-white text-2xl cursor-pointer transition"
-                aria-label="Cerrar carrito"
+                aria-label={t("cart", "close")}
               >
                 ✕
               </button>
@@ -81,12 +60,8 @@ const CartDrawer = ({ open, onClose }: Props) => {
             {/* CONTENIDO */}
             {cartItems.length === 0 ? (
               <div className="text-center mt-20 text-gray-400">
-                <p className="text-lg font-semibold">
-                  Tu carrito está vacío
-                </p>
-                <p className="text-sm mt-2">
-                  Agrega productos para comenzar tu compra
-                </p>
+                <p className="text-lg font-semibold">{t("cart", "empty")}</p>
+                <p className="text-sm mt-2">{t("cart", "emptyHint")}</p>
               </div>
             ) : (
               <>
@@ -96,56 +71,40 @@ const CartDrawer = ({ open, onClose }: Props) => {
                       key={item.id}
                       className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/5"
                     >
-                      {/* IMAGEN */}
                       <img
                         src={item.image || "/images/placeholder.png"}
                         alt={item.name}
                         className="w-20 h-28 object-contain rounded-md bg-black/30 p-1"
                       />
-
-                      {/* INFO */}
                       <div className="flex-1">
-                        <h4 className="font-semibold text-sm leading-snug">
-                          {item.name}
-                        </h4>
+                        <h4 className="font-semibold text-sm leading-snug">{item.name}</h4>
 
-                        {/* CONTROLES DE CANTIDAD */}
                         <div className="flex items-center gap-3 mt-3">
                           <button
                             onClick={() => decreaseQuantity(item.id)}
                             className="w-8 h-8 bg-white/10 rounded-md hover:bg-white/20 active:scale-95 transition cursor-pointer"
-                            aria-label="Disminuir cantidad"
-                          >
-                            −
-                          </button>
-
+                            aria-label={t("cart", "decrease")}
+                          >−</button>
                           <span className="font-semibold text-white min-w-[20px] text-center">
                             {item.quantity}
                           </span>
-
                           <button
                             onClick={() => increaseQuantity(item.id)}
                             className="w-8 h-8 bg-white/10 rounded-md hover:bg-white/20 active:scale-95 transition cursor-pointer"
-                            aria-label="Aumentar cantidad"
-                          >
-                            +
-                          </button>
+                            aria-label={t("cart", "increase")}
+                          >+</button>
                         </div>
 
-                        {/* PRECIO */}
                         <p className="text-blue-400 font-semibold mt-3">
-                          {formatPrice(item.price * item.quantity)}
+                          {fmt(item.price * item.quantity)}
                         </p>
                       </div>
 
-                      {/* ELIMINAR */}
                       <button
                         onClick={() => removeFromCart(item.id)}
                         className="text-red-400 hover:text-red-500 text-xl cursor-pointer transition"
-                        aria-label="Eliminar producto"
-                      >
-                        ✕
-                      </button>
+                        aria-label={t("cart", "remove")}
+                      >✕</button>
                     </div>
                   ))}
                 </div>
@@ -153,24 +112,22 @@ const CartDrawer = ({ open, onClose }: Props) => {
                 {/* TOTAL */}
                 <div className="mt-8 border-t border-white/10 pt-6">
                   <p className="text-lg font-semibold flex justify-between">
-                    <span>Total:</span>
-                    <span className="text-blue-400">
-                      {formatPrice(total)}
-                    </span>
+                    <span>{t("cart", "total")}</span>
+                    <span className="text-blue-400">{fmt(total)}</span>
                   </p>
 
                   <button
                     onClick={handleCheckout}
                     className="mt-5 w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition rounded-lg py-3 font-semibold shadow-lg shadow-blue-600/30 cursor-pointer"
                   >
-                    Proceder al Pago
+                    {t("cart", "checkout")}
                   </button>
 
                   <button
                     onClick={clearCart}
                     className="mt-3 w-full text-sm text-gray-400 hover:text-white transition cursor-pointer"
                   >
-                    Vaciar carrito
+                    {t("cart", "clear")}
                   </button>
                 </div>
               </>

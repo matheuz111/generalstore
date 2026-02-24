@@ -1,8 +1,9 @@
 // src/components/layout/Header.tsx
-
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useCurrency } from "../../context/CurrencyContext";
+import { useLang } from "../../context/LangContext";
+import LangToggle from "../ui/LangToggle";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -10,15 +11,16 @@ interface HeaderProps {
 
 const CurrencySelector = () => {
   const { currency, setCurrency } = useCurrency();
-
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1.5">
       {(["PEN", "USD", "EUR"] as const).map((lib) => (
         <button
           key={lib}
           onClick={() => setCurrency(lib)}
-          className={`px-2 py-1 rounded font-bold transition-colors ${
-            currency === lib ? 'bg-blue-600 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'
+          className={`px-2 py-1 rounded font-bold text-xs transition-colors ${
+            currency === lib
+              ? "bg-blue-600 text-white"
+              : "bg-white/10 text-gray-300 hover:bg-white/20"
           }`}
         >
           {lib}
@@ -30,17 +32,12 @@ const CurrencySelector = () => {
 
 const Header = ({ onCartClick }: HeaderProps) => {
   const { cartItems } = useCart();
-  
-  // SE ELIMINÓ LA LÍNEA: const { currency, setCurrency } = useCurrency(); 
-  // Ya que estos valores se usan dentro de <CurrencySelector /> y no aquí directamente.
+  const { t } = useLang();
 
-  const totalItems = cartItems.reduce(
-    (acc, item) => acc + item.quantity,
-    0
-  );
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-[#18181C]/80 backdrop-blur-xl border-b border-white/10">
+    <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 text-white">
 
         {/* LOGO + NAME */}
@@ -54,7 +51,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
             className="w-16 h-16 object-contain"
             draggable={false}
           />
-
           <span
             className="text-[2.75rem] font-black tracking-[0.15em] uppercase leading-none"
             style={{ fontFamily: "'Rubik Spray Paint', system-ui" }}
@@ -64,22 +60,28 @@ const Header = ({ onCartClick }: HeaderProps) => {
         </Link>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-8 text-sm font-medium">
+        <div className="flex items-center gap-4 text-sm font-medium">
 
+          {/* Moneda */}
           <CurrencySelector />
 
+          {/* Idioma — cubo 3D */}
+          <LangToggle />
+
+          {/* Mi cuenta */}
           <Link
             to="/mi-cuenta"
-            className="cursor-pointer select-none hover:text-blue-400 transition"
+            className="cursor-pointer select-none hover:text-blue-400 transition hidden sm:block"
             style={{ fontFamily: "BurbankSmall" }}
           >
-            Mi Cuenta
+            {t("header", "myAccount")}
           </Link>
 
+          {/* Carrito */}
           <button
             onClick={onCartClick}
             className="relative text-xl cursor-pointer select-none hover:text-blue-400 transition"
-            aria-label="Abrir carrito"
+            aria-label={t("cart", "close")}
           >
             🛒
             {totalItems > 0 && (
