@@ -1,6 +1,6 @@
 // src/pages/AccountDashboard.tsx
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useLang } from "../context/LangContext";
@@ -332,8 +332,10 @@ const PreferencesTab = () => {
 const AccountDashboard = () => {
   const { user, logout } = useAuth();
   const navigate         = useNavigate();
+  const location         = useLocation();
   const { t }            = useLang();
-  const [activeTab, setActiveTab] = useState<Tab>("profile");
+  const initialTab       = (location.state as { tab?: Tab })?.tab || "profile";
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
 
   if (!user) { navigate("/mi-cuenta/login"); return null; }
 

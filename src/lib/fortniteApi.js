@@ -1,166 +1,151 @@
 // src/lib/fortniteApi.js
+//NO TOCAR ya funciona xd
 
-const API_URLS = {
-  ES: "https://fortnite-api.com/v2/shop?language=es-419",
-  EN: "https://fortnite-api.com/v2/shop?language=en",
-};
+const API_URL = "https://fortnite-api.com/v2/shop";
 
-async function fetchJSON(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Error al obtener datos: ${res.status}`);
-  return res.json();
+function vbucksToSoles(vbucks) {
+  return parseFloat(((vbucks / 1000) * 27).toFixed(2));
 }
 
-/* ---------- helpers de color/gradiente ---------- */
-const RARITY_GRADIENTS = {
-  common: ["#3a3f47", "#23272e", "#171a1f"],
-  uncommon: ["#3ccf7a", "#1aa95c", "#0e6a3a"],
-  rare: ["#2aa7ff", "#0b79d0", "#094b84"],
-  epic: ["#a955ff", "#7d38d6", "#4c1f8b"],
-  legendary: ["#ff9a2a", "#e66a00", "#993d00"],
-  mythic: ["#ffcf33", "#df9a00", "#a46a00"],
-  darkseries: ["#6a00ff", "#4700b3", "#2a0066"],
-  marvelseries: ["#ff3131", "#b51b1b", "#6f0f0f"],
-  starwarsseries: ["#52b6ff", "#286f9e", "#133a54"],
-  dcu: ["#00c7ff", "#007aa6", "#003f57"],
-  gaminglegends: ["#53f3db", "#199f8d", "#0d5d54"],
-};
+function getEntryImage(entry) {
+  if (entry.bundle?.image) return entry.bundle.image;
 
-function hexify(v) {
-  if (!v) return null;
-  const s = v.startsWith("#") ? v : `#${v}`;
-  return /^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(s) ? s : null;
-}
+  if (entry.newDisplayAsset?.renderImages?.length > 0) {
+    const brImage = entry.newDisplayAsset.renderImages.find(
+      (r) => r.productTag === "Product.BR"
+    );
+    if (brImage?.image) return brImage.image;
+    if (entry.newDisplayAsset.renderImages[0]?.image)
+      return entry.newDisplayAsset.renderImages[0].image;
+  }
 
-function materialHintToGradient(tileMaterial = "") {
-  const m = String(tileMaterial || "").toLowerCase();
-  if (m.includes("fnmares")) return ["#ff6b1c", "#87167f", "#d53554"];
-  if (m.includes("idol")) return ["#ff7a7a", "#e43d3d", "#941f1f"];
+  const firstItem = entry.brItems?.[0];
+  if (firstItem?.images?.featured) return firstItem.images.featured;
+  if (firstItem?.images?.icon) return firstItem.images.icon;
+
+  if (entry.tracks?.[0]?.albumArt) return entry.tracks[0].albumArt;
+
   return null;
 }
 
-function gradientFrom(entry, rarityTag) {
-  const c1 = hexify(entry?.colors?.color1);
-  const c2 = hexify(entry?.colors?.color2);
-  const c3 = hexify(entry?.colors?.color3);
-  if (c1 && c2 && c3) return [c1, c2, c3];
-  const mat = entry?.tileBackgroundMaterial || entry?.newDisplayAsset?.tileBackgroundMaterial;
-  const hinted = materialHintToGradient(mat);
-  if (hinted) return hinted;
-  const key = String(rarityTag || "common").toLowerCase();
-  return RARITY_GRADIENTS[key] || RARITY_GRADIENTS.common;
-}
+function buildEntryCard(entry, vbuckIcon) {
+  const isBundle = !!entry.bundle;
+  const brCount  = entry.brItems?.length || 0;
+  const isTrack  = entry.tracks?.length > 0 && brCount === 0;
 
-function gradientCss(parts) {
-  if (!parts || parts.length < 2) return undefined;
-  const [a, b, c] = parts;
-  return c
-    ? `linear-gradient(180deg, ${a} 0%, ${b} 55%, ${c} 100%)`
-    : `linear-gradient(180deg, ${a} 0%, ${b} 100%)`;
-}
+  let name, description, typeDisplay, rarity, series;
 
-function pickImage({ it, entry, bundleImage, fallback }) {
-  return (
-    bundleImage ||
-    it?.images?.featured ||
-    it?.images?.icon ||
-    it?.images?.smallIcon ||
-    it?.albumArt ||
-    it?.image ||
-    entry?.newDisplayAsset?.materialInstances?.[0]?.images?.Background ||
-    entry?.newDisplayAsset?.renderImages?.[0]?.image ||
-    fallback ||
-    "/placeholder.png"
-  );
-}
-
-function titleForSection(entry) {
-  return entry?.section?.name || entry?.layout?.name || entry?.displayName || "Destacados";
-}
-
-function extractSectionsFromEntries(payload) {
-  const root = payload?.data;
-  if (!root) return { sections: [], vbuckIcon: null };
-
-  const vbuckIcon = root?.vbuckIcon || null;
-  const entries = (root.entries || []).filter(e => true);
-
-  const sectionsMap = new Map();
-  const order = [];
-  const seenCosmeticIds = new Set(); 
-
-  for (const entry of entries) {
-    const sectionTitle = titleForSection(entry);
-    if (!sectionsMap.has(sectionTitle)) {
-      sectionsMap.set(sectionTitle, []);
-      order.push(sectionTitle);
-    }
-    
-    const finalPrice = entry.finalPrice || 0;
-
-    const processAndPush = (item, type, rarityGuess = 'common') => {
-      const cosmeticId = item.id || entry.offerId;
-      if (type !== 'bundle' && seenCosmeticIds.has(cosmeticId)) {
-        return;
-      }
-      const rarityTag = (item.rarity?.value || item.series?.backendValue || rarityGuess).toLowerCase();
-      
-      sectionsMap.get(sectionTitle).push({
-        id: `${entry.offerId}-${cosmeticId}`,
-        name: item.name || item.title || "Objeto",
-        image: pickImage({ it: item, entry, bundleImage: entry.bundle?.image }),
-        vbucks: finalPrice,
-        rarity: item.rarity?.displayValue || item.series?.value || "Común",
-        rarityTag: rarityTag,
-        expiresAt: entry.outDate || null,
-        bgGradient: gradientCss(gradientFrom(entry, rarityTag)),
-        vbuckIcon: vbuckIcon,
-        set: item.set,
-        type: item.type,
-      });
-      seenCosmeticIds.add(cosmeticId);
-    };
-
-    const brItems = entry.brItems || [];
-    const legoItems = entry.legoKits || [];
-    const isExplicitBundle = entry.bundle && entry.bundle.name;
-    const isUnnamedBundle = !isExplicitBundle && (brItems.length > 1 || legoItems.length > 1);
-
-    if (isExplicitBundle) {
-      processAndPush({ ...entry.bundle, id: entry.offerId }, 'bundle', 'legendary');
-      (entry.items || []).forEach(i => seenCosmeticIds.add(i.id));
-    } else if (isUnnamedBundle) {
-      const mainItem = brItems.find(it => it.type?.value === 'outfit') || legoItems[0] || brItems[0];
-      processAndPush({ ...mainItem, id: entry.offerId, name: mainItem.name }, 'bundle', mainItem.rarity?.value || 'epic');
-      brItems.forEach(i => seenCosmeticIds.add(i.id));
-      legoItems.forEach(i => seenCosmeticIds.add(i.id));
-    } else {
-      (entry.brItems || []).forEach(item => processAndPush(item, 'cosmetic'));
-      (entry.tracks || []).forEach(track => processAndPush(track, 'track', 'rare'));
-      (entry.legoKits || []).forEach(kit => processAndPush(kit, 'lego', 'uncommon'));
-      (entry.cars || []).forEach(carItem => processAndPush(carItem, 'car', carItem.rarity?.value || 'rare'));
-      (entry.items || []).forEach(item => processAndPush(item, 'cosmetic'));
-    }
+  if (isBundle) {
+    name        = entry.bundle.name;
+    description = entry.bundle.info || `${brCount} items`;
+    typeDisplay = "Bundle";
+    rarity      = entry.brItems?.[0]?.rarity || null;
+    series      = entry.brItems?.[0]?.series || null;
+  } else if (isTrack) {
+    const track = entry.tracks[0];
+    name        = track.title;
+    description = `${track.artist}${track.album ? ` • ${track.album}` : ""}`;
+    typeDisplay = "Jam Track";
+    rarity      = null;
+    series      = null;
+  } else if (brCount >= 1) {
+    const item  = entry.brItems[0];
+    name        = item.name;
+    description = brCount > 1 ? `Pack de ${brCount} items` : (item.description || "");
+    typeDisplay = brCount > 1 ? "Pack" : (item.type?.displayValue || "");
+    rarity      = item.rarity || null;
+    series      = item.series || null;
+  } else {
+    name        = entry.devName || "Item";
+    description = "";
+    typeDisplay = "";
+    rarity      = null;
+    series      = null;
   }
 
-  return order.map(title => ({
-    title: title,
-    items: sectionsMap.get(title) || []
-  })).filter(sec => sec.items.length > 0);
+  const vbucks         = entry.finalPrice;
+  const originalVbucks = entry.regularPrice && entry.regularPrice !== entry.finalPrice
+    ? entry.regularPrice : null;
+
+  return {
+    id:      entry.offerId,
+    offerId: entry.offerId,
+
+    name,
+    nameEs: name,
+
+    description,
+    image:       getEntryImage(entry),
+    typeDisplay,
+
+    rarity:       rarity?.value || "common",
+    rarityDisplay: rarity?.displayValue || "",
+    series:       series?.value || null,
+
+    vbucks,
+    originalVbucks,
+    soles:         vbucksToSoles(vbucks),
+    originalSoles: originalVbucks ? vbucksToSoles(originalVbucks) : null,
+    vbuckIcon,
+
+    isBundle,
+    isTrack,
+    banner:   entry.banner?.value || null,
+    giftable: !!entry.giftable,
+
+    layoutName: entry.layout?.name || "Otros",
+    layoutId:   entry.layout?.id   || "otros",
+    tileSize:   entry.tileSize     || "Size_1_x_1",
+
+    bgGradient: entry.colors
+      ? `linear-gradient(135deg, #${entry.colors.color1?.slice(0,6)}22, #${entry.colors.color2?.slice(0,6)}44)`
+      : undefined,
+
+    inDate:  entry.inDate,
+    outDate: entry.outDate,
+
+    bundleItems: isBundle
+      ? entry.brItems?.map((item) => ({
+          id:    item.id,
+          name:  item.name,
+          type:  item.type?.displayValue || "",
+          image: item.images?.icon || item.images?.smallIcon || null,
+        }))
+      : null,
+  };
 }
 
-export async function fetchShopDual(langKey = "ES") {
-  const mainKey = langKey === "EN" ? "EN" : "ES";
-  const url = API_URLS[mainKey];
-  const data = await fetchJSON(url);
-  const sections = extractSectionsFromEntries(data);
+export async function fetchShopDual(_lang = "ES") {
+  const langCode = _lang === "EN" ? "en" : "es";
+  const res = await fetch(`${API_URL}?language=${langCode}`);
+  if (!res.ok) throw new Error(`Error ${res.status} al cargar la tienda de Fortnite`);
+  const data = await res.json();
 
-  return sections.map(sec => ({
-    titleEs: sec.title,
-    items: sec.items.map(it => ({
-      ...it,
-      nameEs: it.name,
-      vbuckIcon: it.vbuckIcon,
-    }))
-  }));
+  const vbuckIcon = data.data?.vbuckIcon || "https://fortnite-api.com/images/vbuck.png";
+  const entries   = data.data?.entries   || [];
+
+  const cards = entries
+    .filter(
+      (entry) =>
+        entry.finalPrice > 0 ||
+        entry.bundle          ||
+        entry.brItems?.length > 0 ||
+        entry.tracks?.length  > 0
+    )
+    .map((entry) => buildEntryCard(entry, vbuckIcon));
+
+  const sectionsMap = {};
+  for (const card of cards) {
+    const key = card.layoutId;
+    if (!sectionsMap[key]) {
+      sectionsMap[key] = {
+        id:      key,
+        titleEs: card.layoutName, 
+        items:   [],
+      };
+    }
+    sectionsMap[key].items.push(card);
+  }
+
+  return Object.values(sectionsMap);
 }
