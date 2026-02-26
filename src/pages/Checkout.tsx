@@ -8,6 +8,8 @@ import { useState } from "react";
 import PaymentMethods from "../components/checkout/PaymentMethods";
 import PaymentInstructions from "../components/checkout/PaymentInstructions";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+
 const SERVERS   = ["America", "Europe", "Asia", "Taiwan"];
 const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
 
@@ -46,7 +48,8 @@ const Checkout = () => {
 
   const symbol = SYMBOLS[currency] ?? "S/";
   const fmt = (n: number) => `${symbol} ${n.toFixed(2)}`;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]       = useState(false);
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
 
   const total = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
 
@@ -66,23 +69,89 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [notes,         setNotes]         = useState("");
 
-  const handleConfirm = () => {
+  /* ── Enviar email de recibo ── */
+  const sendReceiptEmail = async (orderId: number) => {
+    console.log("KEY:", import.meta.env.VITE_INTERNAL_API_KEY);
+    setEmailStatus("sending");
+
+    const formData: Record<string, string> = {
+      name,
+      ...(hasFortnite  && epicUser    && { epicUser }),
+      ...(hasUIDServer && uid         && { uid }),
+      ...(hasUIDServer && server      && { server }),
+      ...(hasGamePass  && gamePassLink && { gamePassLink }),
+      ...(hasDiscord   && discordType  && { discordType }),
+      ...(notes && { notes }),
+    };
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/send-receipt`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_INTERNAL_API_KEY || "",
+        },
+        body: JSON.stringify({
+          email,
+          customerName: name,
+          orderId: String(orderId),
+          total,
+          currency,
+          items: cartItems.map((i) => ({
+            id:       i.id,
+            name:     i.name,
+            price:    i.price,
+            quantity: i.quantity,
+            image:    i.image || "",
+          })),
+          paymentMethod,
+          formData,
+        }),
+      });
+
+      if (res.ok) {
+        setEmailStatus("sent");
+      } else {
+        console.warn("Email no enviado, pero el pedido fue registrado.");
+        setEmailStatus("failed");
+      }
+    } catch (err) {
+      console.warn("No se pudo conectar al backend para enviar el email:", err);
+      setEmailStatus("failed");
+    }
+  };
+
+  const handleConfirm = async () => {
     if (!paymentMethod) return;
     setLoading(true);
+
     const orderId = Math.floor(100000 + Math.random() * 900000);
+
+    const formData: Record<string, string> = {
+      name,
+      email,
+      ...(hasFortnite  && { epicUser }),
+      ...(hasUIDServer && { uid, server }),
+      ...(hasGamePass  && { gamePassLink }),
+      ...(hasDiscord   && { discordType }),
+      notes,
+    };
+
+    // Guardar en localStorage (igual que antes)
     localStorage.setItem("kidstore_last_order", JSON.stringify({
       orderId, user, items: cartItems, paymentMethod, currency,
-      formData: {
-        name, email,
-        ...(hasFortnite  && { epicUser }),
-        ...(hasUIDServer && { uid, server }),
-        ...(hasGamePass  && { gamePassLink }),
-        ...(hasDiscord   && { discordType }),
-        notes,
-      },
+      formData,
       total, createdAt: new Date().toISOString(),
     }));
-    setTimeout(() => { clearCart(); navigate("/orden-confirmada"); }, 1200);
+
+    // Enviar email (en paralelo, no bloquea la navegación si falla)
+    sendReceiptEmail(orderId);
+
+    // Navegar a confirmación después de 1.2s
+    setTimeout(() => {
+      clearCart();
+      navigate("/orden-confirmada");
+    }, 1200);
   };
 
   if (cartItems.length === 0) {
@@ -125,6 +194,24 @@ const Checkout = () => {
           <span>{t("checkout", "total")}</span>
           <span className="text-blue-400">{fmt(total)}</span>
         </div>
+
+        {/* Estado del email (feedback visual) */}
+        {emailStatus === "sending" && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-blue-400">
+            <span className="w-3 h-3 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
+            Enviando confirmación a tu email...
+          </div>
+        )}
+        {emailStatus === "sent" && (
+          <div className="mt-4 text-sm text-green-400">
+            ✅ Recibo enviado a <span className="font-semibold">{email}</span>
+          </div>
+        )}
+        {emailStatus === "failed" && (
+          <div className="mt-4 text-sm text-yellow-500">
+            ⚠️ No se pudo enviar el email, pero tu pedido fue registrado.
+          </div>
+        )}
       </div>
 
       {/* FORMULARIO */}
@@ -211,7 +298,12 @@ const Checkout = () => {
           onClick={handleConfirm} disabled={loading || !paymentMethod}
           className="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-semibold cursor-pointer disabled:opacity-50 transition active:scale-[0.98]"
         >
-          {loading ? t("checkout", "processing") : t("checkout", "confirm")}
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              {t("checkout", "processing")}
+            </span>
+          ) : t("checkout", "confirm")}
         </button>
 
         <p className="text-xs text-gray-400 text-center">{t("checkout", "terms")}</p>

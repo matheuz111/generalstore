@@ -1,30 +1,27 @@
 // src/pages/account/AccountLogin.tsx
 import { useState } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useLang } from "../../context/LangContext";
 
 const AccountLogin = () => {
-  const { login } = useAuth();
-  const { t } = useLang();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { login }  = useAuth();
+  const { t }      = useLang();
+  const navigate   = useNavigate();
 
   const [identifier, setIdentifier] = useState("");
   const [password,   setPassword]   = useState("");
   const [error,      setError]      = useState("");
   const [loading,    setLoading]    = useState(false);
 
-  const redirectTo = (location.state as { from?: string })?.from || "/mi-cuenta";
-
   const handleLogin = async () => {
     setError("");
     if (!identifier || !password) { setError(t("account", "fillAll")); return; }
     setLoading(true);
-    const success = await login(identifier, password);
+    const result = await login(identifier, password);
     setLoading(false);
-    if (!success) { setError(t("account", "wrongCredentials")); return; }
-    navigate(redirectTo, { replace: true });
+    if (!result.success) { setError(result.error || t("account", "wrongCredentials")); return; }
+    navigate("/mi-cuenta", { replace: true });
   };
 
   return (
@@ -37,10 +34,11 @@ const AccountLogin = () => {
           <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-2">{error}</div>
         )}
         <input type="text" placeholder={t("account", "userOrEmail")} value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          onChange={e => setIdentifier(e.target.value)}
           className="w-full bg-black/40 px-4 py-3 rounded-lg outline-none border border-white/10 focus:border-blue-500 transition" />
         <input type="password" placeholder={t("account", "password")} value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleLogin()}
           className="w-full bg-black/40 px-4 py-3 rounded-lg outline-none border border-white/10 focus:border-blue-500 transition" />
         <button onClick={handleLogin} disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 py-3 rounded-xl font-semibold transition cursor-pointer">

@@ -1,161 +1,110 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+// src/context/AuthContext.tsx
+import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
-interface User {
-  username: string;
-  email: string;
-}
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+const SESSION_KEY = "kidstore_session";
 
-interface StoredUser extends User {
-  password: string;
+interface User {
+  id?:      number;
+  username: string;
+  email:    string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  register: (
-    username: string,
-    email: string,
-    password: string
-  ) => boolean;
-  login: (
-    identifier: string,
-    password: string
-  ) => boolean;
-  logout: () => void;
+  user:     User | null;
+  loading:  boolean;
+  register: (username: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login:    (identifier: string, password: string)              => Promise<{ success: boolean; error?: string }>;
+  logout:   () => void;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(
-  null
-);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const [user, setUser] = useState<User | null>(
-    null
-  );
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user,    setUser]    = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  /* ================= CARGAR SESIÓN AL INICIAR ================= */
+  // Cargar sesión guardada al iniciar
   useEffect(() => {
-    const storedUser = localStorage.getItem(
-      "kidstore_user"
-    );
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem(
-          "kidstore_user"
-        );
-      }
+    try {
+      const stored = localStorage.getItem(SESSION_KEY);
+      if (stored) setUser(JSON.parse(stored));
+    } catch {
+      localStorage.removeItem(SESSION_KEY);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  /* ================= REGISTRO ================= */
-  const register = (
-    username: string,
-    email: string,
-    password: string
-  ) => {
-    const users: StoredUser[] = JSON.parse(
-      localStorage.getItem(
-        "kidstore_users"
-      ) || "[]"
-    );
+  /* ── Registro ── */
+  const register = async (username: string, email: string, password: string) => {
+    try {
+      const res  = await fetch(`${BACKEND_URL}/auth/register`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ username, email, password }),
+      });
+      const data = await res.json();
 
-    const exists = users.some(
-      (u) =>
-        u.username === username ||
-        u.email === email
-    );
+      if (!res.ok) return { success: false, error: data.error || "Error al registrar." };
 
-    if (exists) return false;
-
-    const newUser: StoredUser = {
-      username,
-      email,
-      password,
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "kidstore_users",
-      JSON.stringify(users)
-    );
-
-    const publicUser: User = {
-      username,
-      email,
-    };
-
-    localStorage.setItem(
-      "kidstore_user",
-      JSON.stringify(publicUser)
-    );
-
-    setUser(publicUser);
-    return true;
+      const publicUser: User = data.user;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
+      setUser(publicUser);
+      return { success: true };
+    } catch {
+      return { success: false, error: "No se pudo conectar con el servidor." };
+    }
   };
 
-  /* ================= LOGIN ================= */
-  const login = (
-    identifier: string,
-    password: string
-  ) => {
-    const users: StoredUser[] = JSON.parse(
-      localStorage.getItem(
-        "kidstore_users"
-      ) || "[]"
-    );
+  /* ── Login ── */
+  const login = async (identifier: string, password: string) => {
+    try {
+      const res  = await fetch(`${BACKEND_URL}/auth/login`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json();
 
-    const found = users.find(
-      (u) =>
-        (u.username === identifier ||
-          u.email === identifier) &&
-        u.password === password
-    );
+      if (!res.ok) return { success: false, error: data.error || "Credenciales incorrectas." };
 
-    if (!found) return false;
-
-    const publicUser: User = {
-      username: found.username,
-      email: found.email,
-    };
-
-    localStorage.setItem(
-      "kidstore_user",
-      JSON.stringify(publicUser)
-    );
-
-    setUser(publicUser);
-    return true;
+      const publicUser: User = data.user;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
+      setUser(publicUser);
+      return { success: true };
+    } catch {
+      return { success: false, error: "No se pudo conectar con el servidor." };
+    }
   };
 
-  /* ================= LOGOUT ================= */
+  /* ── Cambiar contraseña ── */
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    if (!user) return { success: false, error: "No hay sesión activa." };
+    try {
+      const res  = await fetch(`${BACKEND_URL}/auth/change-password`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ username: user.username, currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { success: false, error: data.error };
+      return { success: true };
+    } catch {
+      return { success: false, error: "No se pudo conectar con el servidor." };
+    }
+  };
+
+  /* ── Logout ── */
   const logout = () => {
-    localStorage.removeItem(
-      "kidstore_user"
-    );
+    localStorage.removeItem(SESSION_KEY);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        register,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, register, login, logout, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
@@ -163,10 +112,6 @@ export const AuthProvider = ({
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
-  }
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
   return ctx;
 };
