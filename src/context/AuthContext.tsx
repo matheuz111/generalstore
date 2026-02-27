@@ -9,13 +9,14 @@ interface User {
   id?:      number;
   username: string;
   email:    string;
+  phone?:   string;
 }
 
 interface AuthContextType {
   user:     User | null;
   loading:  boolean;
-  register: (username: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  login:    (identifier: string, password: string)              => Promise<{ success: boolean; error?: string }>;
+  register: (username: string, email: string, password: string, phone?: string) => Promise<{ success: boolean; error?: string }>;
+  login:    (identifier: string, password: string)                               => Promise<{ success: boolean; error?: string }>;
   logout:   () => void;
   changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 }
@@ -26,7 +27,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user,    setUser]    = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Cargar sesión guardada al iniciar
   useEffect(() => {
     try {
       const stored = localStorage.getItem(SESSION_KEY);
@@ -38,13 +38,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  /* ── Registro ── */
-  const register = async (username: string, email: string, password: string) => {
+  /* ── Registro (acepta phone opcional) ── */
+  const register = async (username: string, email: string, password: string, phone?: string) => {
     try {
       const res  = await fetch(`${BACKEND_URL}/auth/register`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ username, email, password }),
+        body:    JSON.stringify({ username, email, password, phone }),
       });
       const data = await res.json();
 

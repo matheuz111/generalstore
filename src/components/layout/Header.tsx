@@ -34,24 +34,21 @@ const CurrencySelector = () => {
 };
 
 const AccountMenu = () => {
-  const { user, logout }    = useAuth();
-  const { t }               = useLang();
-  const navigate            = useNavigate();
-  const [open, setOpen]     = useState(false);
-  const menuRef             = useRef<HTMLDivElement>(null);
+  const { user, logout } = useAuth();
+  const { t }            = useLang();
+  const navigate         = useNavigate();
+  const [open, setOpen]  = useState(false);
+  const menuRef          = useRef<HTMLDivElement>(null);
 
-  // Cerrar al hacer click fuera
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
         setOpen(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Sin sesión — link directo a login
   if (!user) {
     return (
       <Link
@@ -64,7 +61,13 @@ const AccountMenu = () => {
     );
   }
 
-  // Con sesión — dropdown
+  const dropItems = [
+    { icon: "👤", labelKey: "dropProfile",     tab: "profile"     },
+    { icon: "📦", labelKey: "dropOrders",      tab: "orders"      },
+    { icon: "⚙️", labelKey: "dropPreferences", tab: "preferences" },
+    { icon: "🔐", labelKey: "dropSecurity",    tab: "security"    },
+  ];
+
   return (
     <div className="relative hidden sm:block" ref={menuRef}>
       <button
@@ -72,7 +75,6 @@ const AccountMenu = () => {
         className="flex items-center gap-2 cursor-pointer select-none hover:text-blue-400 transition text-sm font-medium"
         style={{ fontFamily: "BurbankSmall" }}
       >
-        {/* Avatar con inicial */}
         <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs font-black">
           {user.username[0].toUpperCase()}
         </div>
@@ -97,19 +99,14 @@ const AccountMenu = () => {
           >
             {/* Info usuario */}
             <div className="px-4 py-3 border-b border-white/10 bg-white/5">
-              <p className="text-xs text-gray-400">Conectado como</p>
+              <p className="text-xs text-gray-400">{t("account", "dropConnectedAs")}</p>
               <p className="font-bold text-sm truncate">{user.username}</p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>
             </div>
 
             {/* Links */}
             <div className="py-1">
-              {[
-                { icon: "👤", label: "Mi Perfil",     tab: "profile"     },
-                { icon: "📦", label: "Mis Pedidos",   tab: "orders"      },
-                { icon: "⚙️", label: "Preferencias",  tab: "preferences" },
-                { icon: "🔐", label: "Seguridad",     tab: "security"    },
-              ].map(({ icon, label, tab }) => (
+              {dropItems.map(({ icon, labelKey, tab }) => (
                 <button
                   key={tab}
                   onClick={() => {
@@ -119,7 +116,7 @@ const AccountMenu = () => {
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition cursor-pointer text-left"
                 >
                   <span>{icon}</span>
-                  <span>{label}</span>
+                  <span>{t("account", labelKey)}</span>
                 </button>
               ))}
             </div>
@@ -144,24 +141,18 @@ const AccountMenu = () => {
 const Header = ({ onCartClick }: HeaderProps) => {
   const { cartItems } = useCart();
   const { t }         = useLang();
-
-  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const totalItems    = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-black/70 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 text-white">
 
-        {/* LOGO */}
         <Link
           to="/"
           className="flex items-center gap-4 select-none cursor-pointer hover:opacity-90 transition"
         >
-          <img
-            src="/images/logo.png"
-            alt="KIDSTORE"
-            className="w-16 h-16 object-contain"
-            draggable={false}
-          />
+          <img src="/images/logo.png" alt="KIDSTORE"
+            className="w-16 h-16 object-contain" draggable={false} />
           <span
             className="text-[2.75rem] font-black tracking-[0.15em] uppercase leading-none"
             style={{ fontFamily: "'Rubik Spray Paint', system-ui" }}
@@ -170,19 +161,10 @@ const Header = ({ onCartClick }: HeaderProps) => {
           </span>
         </Link>
 
-        {/* ACTIONS */}
         <div className="flex items-center gap-4 text-sm font-medium">
-
-          {/* Moneda */}
           <CurrencySelector />
-
-          {/* Idioma */}
           <LangToggle />
-
-          {/* Cuenta — dropdown o link */}
           <AccountMenu />
-
-          {/* Carrito */}
           <button
             onClick={onCartClick}
             className="relative text-xl cursor-pointer select-none hover:text-blue-400 transition"
@@ -195,7 +177,6 @@ const Header = ({ onCartClick }: HeaderProps) => {
               </span>
             )}
           </button>
-
         </div>
       </div>
     </header>

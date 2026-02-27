@@ -3,22 +3,16 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryShell from "../../components/layout/CategoryShell";
 import FortniteNavButtons from "./FortniteNavButtons";
+import { useLang } from "../../context/LangContext";
 
 const ACCOUNTS = [
-  "KIDSTORE0001",
-  "KIDSTORE0002",
-  "KIDSTORE0003",
-  "KIDSTORE0004",
-  "KIDSTORE0005",
-  "KIDSTORE0006",
-  "KIDSTORE0007",
-  "KIDSTORE0008",
-  "KIDSTORE0009",
-  "KIDSTORE0010",
+  "KIDSTORE0001","KIDSTORE0002","KIDSTORE0003","KIDSTORE0004","KIDSTORE0005",
+  "KIDSTORE0006","KIDSTORE0007","KIDSTORE0008","KIDSTORE0009","KIDSTORE0010",
 ];
 
 const FortniteAgregarBots = () => {
-  const navigate = useNavigate();
+  const navigate        = useNavigate();
+  const { t }           = useLang();
   const [copied, setCopied] = useState<string | null>(null);
 
   const handleCopy = (id: string) => {
@@ -28,8 +22,7 @@ const FortniteAgregarBots = () => {
   };
 
   return (
-    <CategoryShell title="Agregar Cuentas" subtitle="">
-      {/* Nav buttons */}
+    <CategoryShell title={t("fortnite", "botsTitle")} subtitle="">
       <FortniteNavButtons />
 
       {/* Breadcrumb */}
@@ -40,14 +33,14 @@ const FortniteAgregarBots = () => {
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-        Inicio / <span className="text-white">Agregar Cuentas</span>
+        {t("fortnite", "backHome")} / <span className="text-white">{t("fortnite", "botsTitle")}</span>
       </button>
 
       {/* Subtítulo */}
       <p className="text-white/60 text-base max-w-xl mx-auto text-center mb-10">
-        Agrega nuestras cuentas como amigos y espera{" "}
-        <span className="text-orange-400 font-black">48 horas</span>{" "}
-        si es tu primera compra
+        {t("fortnite", "botsSubtitle")}{" "}
+        <span className="text-orange-400 font-black">{t("fortnite", "botsHours")}</span>{" "}
+        {t("fortnite", "botsHoursHint")}
       </p>
 
       {/* Grid de cuentas */}
@@ -74,8 +67,11 @@ const FortniteAgregarBots = () => {
 
             {/* Epic ID */}
             <div className="text-center">
-              <p className="text-white/30 text-[10px] uppercase tracking-widest">Epic ID</p>
-              <p className="text-white font-black text-sm" style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}>
+              <p className="text-white/30 text-[10px] uppercase tracking-widest">
+                {t("fortnite", "botsEpicId")}
+              </p>
+              <p className="text-white font-black text-sm"
+                style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}>
                 {id}
               </p>
             </div>
@@ -90,14 +86,14 @@ const FortniteAgregarBots = () => {
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                   </svg>
-                  ¡Copiado!
+                  {t("fortnite", "botsCopied")}
                 </>
               ) : (
                 <>
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                   </svg>
-                  Copiar ID
+                  {t("fortnite", "botsCopyId")}
                 </>
               )}
             </button>

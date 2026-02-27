@@ -13,29 +13,30 @@ type Tab = "profile" | "orders" | "security" | "preferences";
 
 interface OrderItem { id: string; name: string; price: number; quantity: number }
 interface Order {
-  orderId: number;
-  items: OrderItem[];
-  total: number;
-  currency: string;
+  orderId:       number;
+  items:         OrderItem[];
+  total:         number;
+  currency:      string;
   paymentMethod: string;
-  status: string;
-  createdAt: string;
+  status:        string;
+  createdAt:     string;
 }
-
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  pending:    { label: "Pendiente",   bg: "bg-yellow-500/15", text: "text-yellow-400"  },
-  processing: { label: "Procesando", bg: "bg-blue-500/15",   text: "text-blue-400"    },
-  delivered:  { label: "Entregado",  bg: "bg-green-500/15",  text: "text-green-400"   },
-  cancelled:  { label: "Cancelado",  bg: "bg-red-500/15",    text: "text-red-400"     },
-};
 
 /* ════════════════════════════════════════
    TAB: ÓRDENES
 ════════════════════════════════════════ */
 const OrdersTab = ({ email }: { email: string }) => {
-  const [orders, setOrders]   = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { t } = useLang();
+  const [orders,   setOrders]   = useState<Order[]>([]);
+  const [loading,  setLoading]  = useState(true);
   const [expanded, setExpanded] = useState<number | null>(null);
+
+  const STATUS_CONFIG = (t: (s: any, k: string) => string) => ({
+    pending:    { label: t("account", "statusPending"),    bg: "bg-yellow-500/15", text: "text-yellow-400" },
+    processing: { label: t("account", "statusProcessing"), bg: "bg-blue-500/15",   text: "text-blue-400"   },
+    delivered:  { label: t("account", "statusDelivered"),  bg: "bg-green-500/15",  text: "text-green-400"  },
+    cancelled:  { label: t("account", "statusCancelled"),  bg: "bg-red-500/15",    text: "text-red-400"    },
+  });
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/orders/${encodeURIComponent(email)}`)
@@ -48,41 +49,42 @@ const OrdersTab = ({ email }: { email: string }) => {
   if (loading) return (
     <div className="flex items-center justify-center py-16 gap-3 text-gray-400">
       <span className="w-5 h-5 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin" />
-      Cargando órdenes...
+      {t("account", "ordersLoading")}
     </div>
   );
 
   if (orders.length === 0) return (
     <div className="text-center py-16 text-gray-500">
       <p className="text-4xl mb-4">📦</p>
-      <p className="font-semibold text-white">Aún no tienes pedidos</p>
-      <p className="text-sm mt-1">Tus compras aparecerán aquí una vez que realices un pedido.</p>
+      <p className="font-semibold text-white">{t("account", "ordersEmpty")}</p>
+      <p className="text-sm mt-1">{t("account", "ordersEmptyHint")}</p>
     </div>
   );
+
+  const cfg = STATUS_CONFIG(t);
 
   return (
     <div className="space-y-3">
       {orders.map((order) => {
         const symbol = SYMBOLS[order.currency] ?? "S/";
-        const status = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending;
+        const status = cfg[order.status as keyof typeof cfg] || cfg.pending;
         const isOpen = expanded === order.orderId;
 
         return (
           <div key={order.orderId}
             className="border border-white/10 rounded-xl overflow-hidden bg-white/3">
 
-            {/* Header de la orden */}
             <button
               onClick={() => setExpanded(isOpen ? null : order.orderId)}
               className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 transition cursor-pointer text-left"
             >
               <div className="flex items-center gap-4">
                 <div>
-                  <p className="font-bold text-sm">Pedido #{order.orderId}</p>
+                  <p className="font-bold text-sm">{t("account", "orderNumber")}{order.orderId}</p>
                   <p className="text-xs text-gray-500 mt-0.5">
                     {new Date(order.createdAt).toLocaleDateString("es-PE", {
                       day: "2-digit", month: "short", year: "numeric",
-                      hour: "2-digit", minute: "2-digit"
+                      hour: "2-digit", minute: "2-digit",
                     })}
                   </p>
                 </div>
@@ -95,13 +97,10 @@ const OrdersTab = ({ email }: { email: string }) => {
                 <span className="text-blue-400 font-bold text-sm">
                   {symbol} {Number(order.total).toFixed(2)}
                 </span>
-                <span className="text-gray-500 text-xs">
-                  {isOpen ? "▲" : "▼"}
-                </span>
+                <span className="text-gray-500 text-xs">{isOpen ? "▲" : "▼"}</span>
               </div>
             </button>
 
-            {/* Detalle expandible */}
             <AnimatePresence>
               {isOpen && (
                 <motion.div
@@ -138,24 +137,25 @@ const OrdersTab = ({ email }: { email: string }) => {
 /* ════════════════════════════════════════
    TAB: SEGURIDAD
 ════════════════════════════════════════ */
-const SecurityTab = ({ username }: { username: string }) => {
+const SecurityTab = () => {
   const { changePassword } = useAuth();
-  const [current,  setCurrent]  = useState("");
-  const [newPass,  setNewPass]  = useState("");
-  const [confirm,  setConfirm]  = useState("");
-  const [msg,      setMsg]      = useState<{ type: "ok" | "err"; text: string } | null>(null);
-  const [loading,  setLoading]  = useState(false);
+  const { t } = useLang();
+  const [current, setCurrent] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [msg,     setMsg]     = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = async () => {
     setMsg(null);
     if (!current || !newPass || !confirm) {
-      setMsg({ type: "err", text: "Completa todos los campos." }); return;
+      setMsg({ type: "err", text: t("account", "fillAll") }); return;
     }
     if (newPass.length < 6) {
-      setMsg({ type: "err", text: "La nueva contraseña debe tener al menos 6 caracteres." }); return;
+      setMsg({ type: "err", text: t("account", "passwordShort") }); return;
     }
     if (newPass !== confirm) {
-      setMsg({ type: "err", text: "Las contraseñas no coinciden." }); return;
+      setMsg({ type: "err", text: t("account", "passwordMismatch") }); return;
     }
 
     setLoading(true);
@@ -163,17 +163,23 @@ const SecurityTab = ({ username }: { username: string }) => {
     setLoading(false);
 
     if (!result.success) {
-      setMsg({ type: "err", text: result.error || "Error al cambiar la contraseña." });
+      setMsg({ type: "err", text: result.error || t("account", "fillAll") });
       return;
     }
 
     setCurrent(""); setNewPass(""); setConfirm("");
-    setMsg({ type: "ok", text: "✅ Contraseña actualizada correctamente." });
+    setMsg({ type: "ok", text: t("account", "passwordUpdated") });
   };
+
+  const fields = [
+    { label: t("account", "currentPassword"), val: current, set: setCurrent },
+    { label: t("account", "newPassword"),     val: newPass, set: setNewPass },
+    { label: t("account", "confirmPassword"), val: confirm, set: setConfirm },
+  ];
 
   return (
     <div className="max-w-md space-y-5">
-      <p className="text-sm text-gray-400">Cambia tu contraseña de acceso a KidStore.</p>
+      <p className="text-sm text-gray-400">{t("account", "securityTitle")}</p>
 
       {msg && (
         <motion.div
@@ -188,11 +194,7 @@ const SecurityTab = ({ username }: { username: string }) => {
         </motion.div>
       )}
 
-      {[
-        { label: "Contraseña actual",   val: current, set: setCurrent },
-        { label: "Nueva contraseña",    val: newPass, set: setNewPass },
-        { label: "Confirmar contraseña",val: confirm, set: setConfirm },
-      ].map(({ label, val, set }) => (
+      {fields.map(({ label, val, set }) => (
         <div key={label} className="space-y-1">
           <label className="text-xs text-gray-400 uppercase tracking-wider pl-1">{label}</label>
           <input
@@ -206,7 +208,7 @@ const SecurityTab = ({ username }: { username: string }) => {
         onClick={handleChange} disabled={loading}
         className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 px-6 py-3 rounded-xl font-semibold transition cursor-pointer"
       >
-        {loading ? "Actualizando..." : "Cambiar contraseña"}
+        {loading ? t("account", "updating") : t("account", "changePassword")}
       </button>
     </div>
   );
@@ -217,9 +219,9 @@ const SecurityTab = ({ username }: { username: string }) => {
 ════════════════════════════════════════ */
 const PreferencesTab = () => {
   const { lang, setLang }         = useLang();
+  const { t }                     = useLang();
   const { currency, setCurrency } = useCurrency();
 
-  // Preferencias guardadas en localStorage
   const [emailNotif, setEmailNotif] = useState(() =>
     localStorage.getItem("kidstore_pref_notif") !== "false"
   );
@@ -237,11 +239,11 @@ const PreferencesTab = () => {
 
   return (
     <div className="max-w-md space-y-7">
-      <p className="text-sm text-gray-400">Personaliza tu experiencia en KidStore.</p>
+      <p className="text-sm text-gray-400">{t("account", "prefTitle")}</p>
 
       {/* Idioma */}
       <div className="space-y-2">
-        <label className="text-xs text-gray-400 uppercase tracking-wider">Idioma</label>
+        <label className="text-xs text-gray-400 uppercase tracking-wider">{t("account", "prefLanguage")}</label>
         <div className="flex gap-3">
           {(["ES", "EN"] as const).map((l) => (
             <button key={l} onClick={() => setLang(l)}
@@ -259,7 +261,7 @@ const PreferencesTab = () => {
 
       {/* Moneda */}
       <div className="space-y-2">
-        <label className="text-xs text-gray-400 uppercase tracking-wider">Moneda</label>
+        <label className="text-xs text-gray-400 uppercase tracking-wider">{t("account", "prefCurrency")}</label>
         <div className="flex gap-3">
           {(["PEN", "USD", "EUR"] as const).map((c) => (
             <button key={c} onClick={() => setCurrency(c)}
@@ -278,8 +280,8 @@ const PreferencesTab = () => {
       {/* Notificaciones */}
       <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-5 py-4">
         <div>
-          <p className="font-semibold text-sm">Notificaciones por email</p>
-          <p className="text-xs text-gray-500 mt-0.5">Recibe confirmaciones y novedades</p>
+          <p className="font-semibold text-sm">{t("account", "prefNotif")}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{t("account", "prefNotifHint")}</p>
         </div>
         <button
           onClick={() => setEmailNotif(!emailNotif)}
@@ -295,12 +297,12 @@ const PreferencesTab = () => {
 
       {/* Tema */}
       <div className="space-y-2">
-        <label className="text-xs text-gray-400 uppercase tracking-wider">Tema visual</label>
+        <label className="text-xs text-gray-400 uppercase tracking-wider">{t("account", "prefTheme")}</label>
         <div className="flex gap-3">
           {[
-            { id: "dark",  label: "🌙 Oscuro" },
-            { id: "light", label: "☀️ Claro (próximamente)" },
-          ].map(({ id, label }) => (
+            { id: "dark",  labelKey: "prefDark"  },
+            { id: "light", labelKey: "prefLight" },
+          ].map(({ id, labelKey }) => (
             <button key={id}
               onClick={() => id === "dark" && setTheme(id)}
               disabled={id === "light"}
@@ -310,7 +312,7 @@ const PreferencesTab = () => {
                   : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
               }`}
             >
-              {label}
+              {t("account", labelKey)}
             </button>
           ))}
         </div>
@@ -320,7 +322,7 @@ const PreferencesTab = () => {
         onClick={handleSave}
         className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-semibold transition cursor-pointer active:scale-[0.98]"
       >
-        {saved ? "✅ Guardado" : "Guardar preferencias"}
+        {saved ? t("account", "prefSaved") : t("account", "prefSave")}
       </button>
     </div>
   );
@@ -339,11 +341,11 @@ const AccountDashboard = () => {
 
   if (!user) { navigate("/mi-cuenta/login"); return null; }
 
-  const tabs: { id: Tab; icon: string; label: string }[] = [
-    { id: "profile",     icon: "👤", label: "Perfil"       },
-    { id: "orders",      icon: "📦", label: "Mis Pedidos"  },
-    { id: "security",    icon: "🔐", label: "Seguridad"    },
-    { id: "preferences", icon: "⚙️", label: "Preferencias" },
+  const tabs: { id: Tab; icon: string; labelKey: string }[] = [
+    { id: "profile",     icon: "👤", labelKey: "tabProfile"     },
+    { id: "orders",      icon: "📦", labelKey: "tabOrders"      },
+    { id: "security",    icon: "🔐", labelKey: "tabSecurity"    },
+    { id: "preferences", icon: "⚙️", labelKey: "tabPreferences" },
   ];
 
   return (
@@ -354,23 +356,24 @@ const AccountDashboard = () => {
         <div>
           <h1 className="text-4xl font-black uppercase tracking-widest"
             style={{ fontFamily: "BurbankBig" }}>
-            Mi Cuenta
+            {t("account", "title")}
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            Bienvenido, <span className="text-blue-400 font-semibold">{user.username}</span>
+            {t("account", "dropConnectedAs")},{" "}
+            <span className="text-blue-400 font-semibold">{user.username}</span>
           </p>
         </div>
         <button
           onClick={() => { logout(); navigate("/"); }}
           className="bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 text-red-400 px-5 py-2.5 rounded-xl font-semibold text-sm transition cursor-pointer"
         >
-          Cerrar sesión
+          {t("account", "logout")}
         </button>
       </div>
 
       <div className="grid md:grid-cols-[220px_1fr] gap-8">
 
-        {/* Sidebar tabs */}
+        {/* Sidebar */}
         <nav className="space-y-2">
           {tabs.map((tab) => (
             <button
@@ -383,7 +386,7 @@ const AccountDashboard = () => {
               }`}
             >
               <span>{tab.icon}</span>
-              <span>{tab.label}</span>
+              <span>{t("account", tab.labelKey)}</span>
             </button>
           ))}
         </nav>
@@ -398,9 +401,11 @@ const AccountDashboard = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.18 }}
             >
+
+              {/* ── PERFIL ── */}
               {activeTab === "profile" && (
                 <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-blue-400">Información de Perfil</h2>
+                  <h2 className="text-xl font-bold text-blue-400">{t("account", "profileTitle")}</h2>
                   <div className="space-y-4">
                     <div className="bg-black/30 rounded-xl px-5 py-4 flex items-center gap-4">
                       <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-xl font-black">
@@ -409,27 +414,37 @@ const AccountDashboard = () => {
                       <div>
                         <p className="font-bold">{user.username}</p>
                         <p className="text-sm text-gray-400">{user.email}</p>
+                        {user.phone && (
+                          <p className="text-sm text-gray-500">{user.phone}</p>
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="bg-black/20 rounded-xl px-4 py-3">
-                        <p className="text-gray-500 text-xs mb-1">Usuario</p>
+                        <p className="text-gray-500 text-xs mb-1">{t("account", "profileUser")}</p>
                         <p className="font-semibold">{user.username}</p>
                       </div>
                       <div className="bg-black/20 rounded-xl px-4 py-3">
-                        <p className="text-gray-500 text-xs mb-1">Correo</p>
+                        <p className="text-gray-500 text-xs mb-1">{t("account", "profileEmail")}</p>
                         <p className="font-semibold">{user.email}</p>
+                      </div>
+                      <div className="bg-black/20 rounded-xl px-4 py-3 col-span-2">
+                        <p className="text-gray-500 text-xs mb-1">{t("account", "profilePhone")}</p>
+                        <p className="font-semibold">
+                          {user.phone || (
+                            <span className="text-gray-600">{t("account", "profileNoPhone")}</span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {activeTab === "orders" && <OrdersTab email={user.email} />}
-
-              {activeTab === "security" && <SecurityTab username={user.username} />}
-
+              {activeTab === "orders"      && <OrdersTab email={user.email} />}
+              {activeTab === "security"    && <SecurityTab />}
               {activeTab === "preferences" && <PreferencesTab />}
+
             </motion.div>
           </AnimatePresence>
         </div>

@@ -7,69 +7,69 @@ import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { useLang } from "../context/LangContext";
 
-/* ------------------------------------------------------------------ */
-/* BOTONES DE NAVEGACIÓN FORTNITE                                      */
-/* ------------------------------------------------------------------ */
-const FNAV_BUTTONS = [
-  {
-    to: "/fortnite/agregar-bots",
-    label: "Agregar Bots",
-    bg: "#1a6bb5",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
-        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-        <circle cx="19" cy="8" r="3" fill="#4ade80"/>
-        <text x="17.2" y="9.5" fontSize="4" fill="white" fontWeight="bold">+</text>
-      </svg>
-    ),
-  },
-  {
-    to: "/fortnite/recarga-pavos",
-    label: "Recarga de Pavos",
-    bg: "#7c3aed",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7">
-        <circle cx="12" cy="12" r="10" fill="#a78bfa" opacity="0.3"/>
-        <text x="6" y="16" fontSize="11" fill="white" fontWeight="black">V</text>
-        <circle cx="15" cy="9" r="4" fill="#fbbf24"/>
-        <text x="13" y="11.5" fontSize="6" fill="white" fontWeight="bold">+</text>
-      </svg>
-    ),
-  },
-  {
-    to: "/fortnite/paquetes",
-    label: "Paquetes de Fortnite",
-    bg: "#0ea5e9",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
-        <path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64c-.07-.44-.18-.86-.18-1 0-1.1.9-2 2-2zm0 10l-4-4 1.41-1.41L14 10.17l6.59-6.59L22 5l-8 8z"/>
-      </svg>
-    ),
-  },
-  {
-    to: "/fortnite/pase-de-batalla",
-    label: "Pase de Batalla",
-    bg: "#d97706",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
-        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/>
-      </svg>
-    ),
-  },
-  {
-    to: "/fortnite",
-    label: "Tienda de Fortnite",
-    bg: "#0d47a1",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
-        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.45 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-      </svg>
-    ),
-  },
-];
-
+/* ── Nav buttons ── */
 const FortniteNavButtons = () => {
   const navigate = useNavigate();
+  const { t }    = useLang();
+
+  const FNAV_BUTTONS = [
+    {
+      to: "/fortnite/agregar-bots",
+      labelKey: "navBots",
+      bg: "#1a6bb5",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          <circle cx="19" cy="8" r="3" fill="#4ade80"/>
+          <text x="17.2" y="9.5" fontSize="4" fill="white" fontWeight="bold">+</text>
+        </svg>
+      ),
+    },
+    {
+      to: "/fortnite/recarga-pavos",
+      labelKey: "navPavos",
+      bg: "#7c3aed",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7">
+          <circle cx="12" cy="12" r="10" fill="#a78bfa" opacity="0.3"/>
+          <text x="6" y="16" fontSize="11" fill="white" fontWeight="black">V</text>
+          <circle cx="15" cy="9" r="4" fill="#fbbf24"/>
+          <text x="13" y="11.5" fontSize="6" fill="white" fontWeight="bold">+</text>
+        </svg>
+      ),
+    },
+    {
+      to: "/fortnite/paquetes",
+      labelKey: "navPacks",
+      bg: "#0ea5e9",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M20 6h-2.18c.07-.44.18-.86.18-1 0-2.21-1.79-4-4-4s-4 1.79-4 4c0 .14.11.56.18 1H8c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6-3c1.1 0 2 .9 2 2 0 .14-.11.56-.18 1h-3.64c-.07-.44-.18-.86-.18-1 0-1.1.9-2 2-2zm0 10l-4-4 1.41-1.41L14 10.17l6.59-6.59L22 5l-8 8z"/>
+        </svg>
+      ),
+    },
+    {
+      to: "/fortnite/pase-de-batalla",
+      labelKey: "navBP",
+      bg: "#d97706",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/>
+        </svg>
+      ),
+    },
+    {
+      to: "/fortnite",
+      labelKey: "navShop",
+      bg: "#0d47a1",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.45 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div className="flex justify-center gap-3 flex-wrap mb-10">
       {FNAV_BUTTONS.map((btn) => (
@@ -78,35 +78,34 @@ const FortniteNavButtons = () => {
           onClick={() => navigate(btn.to)}
           className="flex flex-col items-center justify-center gap-2 w-24 h-24 rounded-2xl border-2 border-black/30 shadow-lg hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200 text-white font-black text-[11px] uppercase text-center leading-tight"
           style={{
-            background: btn.bg,
-            fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
-            boxShadow: `0 4px 20px ${btn.bg}55`,
+            background:  btn.bg,
+            fontFamily:  "'BurbankBig','Arial Black','Impact',sans-serif",
+            boxShadow:   `0 4px 20px ${btn.bg}55`,
           }}
         >
           {btn.icon}
-          <span >{btn.label}</span>
+          <span>{t("fortnite", btn.labelKey)}</span>
         </button>
       ))}
     </div>
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* COUNTDOWN                                                            */
-/* ------------------------------------------------------------------ */
+/* ── Countdown ── */
 function useCountdown(outDate: string) {
   const [timeLeft, setTimeLeft] = useState("");
+  const { t } = useLang();
 
   useEffect(() => {
     function calc() {
       const diff = new Date(outDate).getTime() - Date.now();
-      if (diff <= 0) { setTimeLeft("Expirado"); return; }
+      if (diff <= 0) { setTimeLeft(t("fortnite", "expired")); return; }
 
       const days    = Math.floor(diff / 86_400_000);
       const hours   = Math.floor((diff % 86_400_000) / 3_600_000);
       const minutes = Math.floor((diff % 3_600_000)  / 60_000);
       const seconds = Math.floor((diff % 60_000)     / 1_000);
-      const pad = (n: number) => String(n).padStart(2, "0");
+      const pad     = (n: number) => String(n).padStart(2, "0");
 
       if (days > 0)
         setTimeLeft(`${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`);
@@ -124,7 +123,7 @@ function useCountdown(outDate: string) {
 }
 
 const SectionCountdown = ({ outDate }: { outDate: string }) => {
-  const countdown = useCountdown(outDate);
+  const countdown  = useCountdown(outDate);
   const colorClass =
     countdown.includes("m") && !countdown.includes("h") && !countdown.includes("d")
       ? "bg-red-500/20 text-red-400 border-red-500/40"
@@ -142,9 +141,7 @@ const SectionCountdown = ({ outDate }: { outDate: string }) => {
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* SHOP CARD                                                            */
-/* ------------------------------------------------------------------ */
+/* ── Shop Card ── */
 const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
   const priceValue = convertVbucks(item.vbucks);
   const hasVbucks  = item.vbucks > 0;
@@ -161,7 +158,7 @@ const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
       )}
       {item.isBundle && (
         <div className="absolute top-2 right-2 z-10 bg-purple-600 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow">
-          Bundle
+          {t("fortnite", "bundle")}
         </div>
       )}
       <div className="relative overflow-hidden rounded-xl mb-4">
@@ -211,15 +208,13 @@ const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
         disabled={!hasVbucks}
         className="w-full mt-4 bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed py-2 rounded-xl text-xs font-bold uppercase transition active:scale-95"
       >
-        {t("product", "addToCart")}
+        {t("fortnite", "addToCart")}
       </button>
     </div>
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* FILTER DRAWER — flota sobre el contenido, no lo empuja              */
-/* ------------------------------------------------------------------ */
+/* ── Filter Drawer ── */
 const FilterDrawer = ({
   sections,
   activeId,
@@ -230,10 +225,11 @@ const FilterDrawer = ({
   onSelect: (id: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
+  const { t }           = useLang();
 
   return (
     <>
-      {/* Botón disparador — fijo en el lado izquierdo */}
+      {/* Botón disparador */}
       <button
         onClick={() => setOpen((v) => !v)}
         className={`
@@ -244,13 +240,11 @@ const FilterDrawer = ({
           px-2 py-4 rounded-r-2xl shadow-xl
           transition-all duration-200
         `}
-        title="Filtros"
+        title={t("fortnite", "filterBtn")}
       >
-        {/* Ícono filtro */}
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M7 8h10M11 12h6M13 16h4" />
         </svg>
-        {/* Texto vertical */}
         <span
           className="text-[10px] font-black uppercase tracking-widest"
           style={{
@@ -258,9 +252,8 @@ const FilterDrawer = ({
             fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
           }}
         >
-          Filtros
+          {t("fortnite", "filterBtn")}
         </span>
-        {/* Indicador de apertura */}
         <svg
           className={`w-3 h-3 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
@@ -269,7 +262,7 @@ const FilterDrawer = ({
         </svg>
       </button>
 
-      {/* Overlay al abrir */}
+      {/* Overlay */}
       <div
         className={`fixed inset-0 z-40 transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -278,7 +271,7 @@ const FilterDrawer = ({
         onClick={() => setOpen(false)}
       />
 
-      {/* Panel drawer — desliza desde la izquierda, flota sobre todo */}
+      {/* Panel */}
       <aside
         className={`
           fixed top-0 left-0 h-full w-64 z-50
@@ -298,17 +291,20 @@ const FilterDrawer = ({
               className="text-white font-black uppercase text-sm tracking-widest"
               style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
             >
-              Navegación
+              {t("fortnite", "filterNav")}
             </span>
           </div>
-          <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white transition">
+          <button onClick={() => setOpen(false)}
+            className="text-white/40 hover:text-white transition"
+            aria-label={t("fortnite", "filterClose")}
+          >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        {/* Lista */}
+        {/* Lista de secciones */}
         <nav className="overflow-y-auto flex-1 px-2 space-y-1">
           {sections.map((section) => {
             const isActive = section.id === activeId;
@@ -327,7 +323,9 @@ const FilterDrawer = ({
                 style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
               >
                 <span className="leading-tight">{section.titleEs}</span>
-                {isActive && <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0 animate-pulse" />}
+                {isActive && (
+                  <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0 animate-pulse" />
+                )}
               </button>
             );
           })}
@@ -337,9 +335,7 @@ const FilterDrawer = ({
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* MAIN PAGE                                                            */
-/* ------------------------------------------------------------------ */
+/* ── Main Page ── */
 const Fortnite = () => {
   const [sections, setSections] = useState<any[]>([]);
   const [loading,  setLoading]  = useState(true);
@@ -347,22 +343,21 @@ const Fortnite = () => {
   const [activeId, setActiveId] = useState<string>("");
 
   const { formatPrice, convertVbucks } = useCurrency();
-  const { addToCart } = useCart();
-  const { t, lang }   = useLang();
+  const { addToCart }                  = useCart();
+  const { t, lang }                    = useLang();
 
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
+  const loadShop = () => {
     setLoading(true);
     setError(null);
     fetchShopDual(lang === "EN" ? "EN" : "ES")
       .then((data) => { setSections(data); setActiveId(data[0]?.id || ""); })
-      .catch(err => {
-        console.error("Error cargando tienda Fortnite:", err);
-        setError(err.message);
-      })
+      .catch(err  => { console.error(err); setError(err.message); })
       .finally(() => setLoading(false));
-  }, [lang]);
+  };
+
+  useEffect(() => { loadShop(); }, [lang]);
 
   // Scroll spy
   useEffect(() => {
@@ -402,20 +397,20 @@ const Fortnite = () => {
           className="text-2xl font-black uppercase italic text-white"
           style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
         >
-          Tienda no disponible
+          {t("fortnite", "errorTitle")}
         </h2>
         <p className="text-white/50 text-sm max-w-sm">
           {error === "503"
-            ? "Los servidores de Fortnite están temporalmente caídos. Intenta de nuevo en unos minutos."
-            : `Error al conectar con la API (${error}). Revisa tu conexión e intenta de nuevo.`
+            ? t("fortnite", "errorServers")
+            : `${t("fortnite", "errorGeneric")} (${error})`
           }
         </p>
         <button
-          onClick={() => { setLoading(true); setError(null); fetchShopDual(lang === "EN" ? "EN" : "ES").then((data) => { setSections(data); setActiveId(data[0]?.id || ""); }).catch(err => setError(err.message)).finally(() => setLoading(false)); }}
+          onClick={loadShop}
           className="bg-blue-600 hover:bg-blue-500 text-white font-black uppercase px-6 py-3 rounded-xl transition active:scale-95"
           style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
         >
-          🔄 Reintentar
+          {t("fortnite", "retry")}
         </button>
       </div>
     </CategoryShell>
@@ -423,18 +418,14 @@ const Fortnite = () => {
 
   return (
     <CategoryShell title="Fortnite" subtitle={t("fortnite", "subtitle")}>
-
-      {/* Botones de navegación */}
       <FortniteNavButtons />
 
-      {/* Panel flotante — NO está en el flujo del documento */}
       <FilterDrawer
         sections={sections}
         activeId={activeId}
         onSelect={handleSelect}
       />
 
-      {/* Contenido ocupa el 100% del ancho, sin cambios */}
       <div className="space-y-12">
         {sections.map((section) => {
           const sectionOutDate = section.items[0]?.outDate;
