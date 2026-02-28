@@ -1,32 +1,44 @@
 // src/pages/fortnite/FortnitePaquetes.tsx
-//
-// 🖼️  IMÁGENES: pon tus archivos en public/images/fortnite/paquetes/
-//   y pon la ruta en el campo `image` de cada producto.
-//   Ejemplo:  image: "/images/fortnite/paquetes/flowering-chaos.png"
-//   Si dejas image: "" se muestra un placeholder automático.
-
 import { useLang } from "../../context/LangContext";
 import FortniteProductLayout from "./FortniteProductLayout";
 import type { FnProduct } from "./FortniteProductLayout";
 
+const PAQUETES: FnProduct[] = [
+  { id: "pack-flowering",  name: "Flowering Chaos Bundle",  desc: "", pricePEN: 79.00, image: "/images/fortnite/paquetes/flowering-chaos.webp"  },
+  { id: "pack-koi",        name: "Reino Koi Bundle",        desc: "", pricePEN: 49.00, image: "/images/fortnite/paquetes/reino-koi.webp"          },
+  { id: "pack-deriva",     name: "Deriva Infinita Bundle",  desc: "", pricePEN: 59.00, image: "/images/fortnite/paquetes/deriva-infinita.webp"    },
+  { id: "pack-noche",      name: "Noche de Fortnite Bundle",desc: "", pricePEN: 39.00, image: "/images/fortnite/paquetes/noche-fortnite.webp"     },
+  { id: "pack-starter",    name: "Starter Pack",            desc: "", pricePEN: 14.99, image: "/images/fortnite/paquetes/starter-pack.webp"       },
+  { id: "pack-legends",    name: "Legends Bundle",          desc: "", pricePEN: 65.00, image: "/images/fortnite/paquetes/legends.webp"            },
+  { id: "pack-shadow",     name: "Shadow Bundle",           desc: "", pricePEN: 45.00, image: "/images/fortnite/paquetes/shadow.webp"             },
+];
+
 const FortnitePaquetes = () => {
   const { t } = useLang();
 
-  const PRODUCTS: FnProduct[] = [
-    { id: "pack-flowering", name: "Flowering Chaos Bundle",          desc: t("fortnite", "packDesc"), pricePEN: 79.00, image: "" },
-    { id: "pack-koi",       name: "Paquete Reino Koi",               desc: t("fortnite", "packDesc"), pricePEN: 42.00, image: "" },
-    { id: "pack-deriva",    name: "Paquete Deriva Infinita",         desc: t("fortnite", "packDesc"), pricePEN: 42.00, image: "" },
-    { id: "pack-surfeo",    name: "Paquete de Inicio Surfeo Shaka",  desc: t("fortnite", "packDesc"), pricePEN: 14.99, image: "" },
-    { id: "pack-siluro",    name: "Paquete de Misiones de Siluro",   desc: t("fortnite", "packDesc"), pricePEN: 22.00, image: "" },
-    { id: "pack-operacion", name: "Paquete de Inicio Operación",     desc: t("fortnite", "packDesc"), pricePEN: 14.99, image: "" },
-    { id: "pack-clip",      name: "Paquete Clip al Completo",        desc: t("fortnite", "packDesc"), pricePEN: 39.99, image: "" },
-  ];
+  const infoBox = (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+      <h3 className="text-white font-black text-lg" style={{ fontFamily: "BurbankBig" }}>
+        {t("fortnite", "packagesInfoTitle")}
+      </h3>
+      <p className="text-white/60 text-sm leading-relaxed">
+        {t("fortnite", "packagesInfoDesc")}
+      </p>
+      <div className="space-y-1 text-sm text-white/60 border-t border-white/10 pt-4">
+        <p>{t("fortnite", "packagesInfoNote1")}</p>
+        <p>{t("fortnite", "packagesInfoNote2")}</p>
+        <p>{t("fortnite", "packagesInfoNote3")}</p>
+        <p>{t("fortnite", "packagesInfoSafe")}</p>
+      </div>
+    </div>
+  );
 
   return (
     <FortniteProductLayout
       title={t("fortnite", "packagesTitle")}
-      info={t("fortnite", "packagesInfo")}
-      products={PRODUCTS}
+      info=""
+      products={PAQUETES}
+      infoBox={infoBox}
     />
   );
 };

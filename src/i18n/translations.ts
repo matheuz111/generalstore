@@ -116,13 +116,11 @@ export const translations = {
     userExists:       { ES: "El usuario o correo ya existe",                EN: "Username or email already exists"   },
     registerMe:       { ES: "Registrarme",                                  EN: "Register"                           },
 
-    /* ── Dashboard tabs ── */
     tabProfile:       { ES: "Perfil",                                       EN: "Profile"                            },
     tabOrders:        { ES: "Mis Pedidos",                                  EN: "My Orders"                          },
     tabSecurity:      { ES: "Seguridad",                                    EN: "Security"                           },
     tabPreferences:   { ES: "Preferencias",                                 EN: "Preferences"                        },
 
-    /* ── Dashboard: profile tab ── */
     connectedAs:      { ES: "Conectado como",                               EN: "Signed in as"                       },
     profileTitle:     { ES: "Información de Perfil",                        EN: "Profile Information"                },
     profileUser:      { ES: "Usuario",                                      EN: "Username"                           },
@@ -130,7 +128,6 @@ export const translations = {
     profilePhone:     { ES: "Teléfono",                                     EN: "Phone"                              },
     profileNoPhone:   { ES: "No registrado",                                EN: "Not registered"                     },
 
-    /* ── Dashboard: orders tab ── */
     ordersLoading:    { ES: "Cargando órdenes...",                          EN: "Loading orders..."                  },
     ordersEmpty:      { ES: "Aún no tienes pedidos",                        EN: "No orders yet"                      },
     ordersEmptyHint:  { ES: "Tus compras aparecerán aquí una vez que realices un pedido.", EN: "Your purchases will appear here once you place an order." },
@@ -144,7 +141,6 @@ export const translations = {
     statusDelivered:  { ES: "Entregado",                                    EN: "Delivered"                          },
     statusCancelled:  { ES: "Cancelado",                                    EN: "Cancelled"                          },
 
-    /* ── Dashboard: security tab ── */
     securityTitle:    { ES: "Cambia tu contraseña de acceso a KidStore.",   EN: "Change your KidStore access password." },
     currentPassword:  { ES: "Contraseña actual",                           EN: "Current password"                   },
     newPassword:      { ES: "Nueva contraseña",                            EN: "New password"                       },
@@ -155,7 +151,6 @@ export const translations = {
     passwordMismatch: { ES: "Las contraseñas no coinciden.",               EN: "Passwords do not match."            },
     passwordShort:    { ES: "La nueva contraseña debe tener al menos 6 caracteres.", EN: "New password must be at least 6 characters." },
 
-    /* ── Dashboard: preferences tab ── */
     prefTitle:        { ES: "Personaliza tu experiencia en KidStore.",     EN: "Customize your KidStore experience." },
     prefLanguage:     { ES: "Idioma",                                      EN: "Language"                           },
     prefCurrency:     { ES: "Moneda",                                      EN: "Currency"                           },
@@ -167,7 +162,6 @@ export const translations = {
     prefSave:         { ES: "Guardar preferencias",                        EN: "Save preferences"                   },
     prefSaved:        { ES: "✅ Guardado",                                 EN: "✅ Saved"                            },
 
-    /* ── Register: phone field ── */
     phoneContact:     { ES: "Número de contacto",                          EN: "Contact number"                     },
     phoneSearch:      { ES: "Buscar país o código...",                     EN: "Search country or code..."          },
     phoneNoResults:   { ES: "Sin resultados",                              EN: "No results"                         },
@@ -175,7 +169,6 @@ export const translations = {
     phoneRequired:    { ES: "Ingresa tu número de contacto.",              EN: "Enter your contact number."         },
     phoneInvalid:     { ES: "Ingresa un número de teléfono válido.",       EN: "Enter a valid phone number."        },
 
-    /* ── Register: OTP step ── */
     verifyTitle:      { ES: "Verifica tu cuenta",                          EN: "Verify your account"               },
     verifySentTo:     { ES: "Enviamos un código de 6 dígitos a",           EN: "We sent a 6-digit code to"          },
     verifyPaste:      { ES: "Puedes pegar el código directamente",         EN: "You can paste the code directly"    },
@@ -188,12 +181,10 @@ export const translations = {
     verifyMinChars:   { ES: "Ingresa los 6 dígitos del código.",           EN: "Enter the 6-digit code."            },
     verifyContinue:   { ES: "Continuar →",                                 EN: "Continue →"                         },
 
-    /* ── Register: success step ── */
     welcomeTitle:     { ES: "¡Bienvenido!",                                EN: "Welcome!"                           },
     welcomeCreated:   { ES: "Tu cuenta fue creada con éxito,",             EN: "Your account was created successfully," },
     welcomeRedirect:  { ES: "Redirigiendo a tu cuenta...",                 EN: "Redirecting to your account..."     },
 
-    /* ── Header dropdown ── */
     dropConnectedAs:  { ES: "Conectado como",                              EN: "Signed in as"                       },
     dropProfile:      { ES: "Mi Perfil",                                   EN: "My Profile"                         },
     dropOrders:       { ES: "Mis Pedidos",                                 EN: "My Orders"                          },
@@ -271,20 +262,11 @@ export const translations = {
     errorGeneric:    { ES: "Error al conectar con la API. Revisa tu conexión e intenta de nuevo.", EN: "Error connecting to the API. Check your connection and try again." },
     retry:           { ES: "🔄 Reintentar",                  EN: "🔄 Retry"                      },
 
-    /* ── Subpáginas comunes (FortniteProductLayout) ── */
+    /* ── Subpáginas comunes ── */
     backHome:        { ES: "Inicio",                         EN: "Home"                         },
-    instantDelivery: { ES: "Entrega Instantánea",            EN: "Instant Delivery"             },
-    safe:            { ES: "100% Seguro",                    EN: "100% Safe"                    },
-    infoLabel:       { ES: "Información:",                   EN: "Information:"                 },
-    orderSummary:    { ES: "Resumen de compra",              EN: "Order summary"                },
-    selectProduct:   { ES: "Selecciona un producto para ver el total.", EN: "Select a product to see the total." },
-    selectedProduct: { ES: "Producto seleccionado",          EN: "Product selected"             },
-    productLabel:    { ES: "Producto:",                      EN: "Product:"                     },
-    totalLabel:      { ES: "Total",                          EN: "Total"                        },
-    addCart:         { ES: "Añadir al carrito",              EN: "Add to cart"                  },
-    selectFirst:     { ES: "Selecciona un producto",         EN: "Select a product"             },
+    addCartBtn:      { ES: "+ Agregar al carrito",           EN: "+ Add to cart"                },
 
-    /* ── Agregar Bots ── */
+    /* ── Agregar Cuentas ── */
     botsTitle:       { ES: "Agregar Cuentas",                EN: "Add Accounts"                 },
     botsSubtitle:    { ES: "Agrega nuestras cuentas como amigos y espera",  EN: "Add our accounts as friends and wait" },
     botsHours:       { ES: "48 horas",                       EN: "48 hours"                     },
@@ -294,23 +276,58 @@ export const translations = {
     botsEpicId:      { ES: "Epic ID",                        EN: "Epic ID"                      },
 
     /* ── Recarga de Pavos ── */
-    pavosTitle:      { ES: "Recarga de paVos",                              EN: "V-Bucks Top-Up"                           },
-    pavosInfo:       { ES: "¡Consigue tus paVos para Fortnite hoy!",        EN: "Get your Fortnite V-Bucks today!"         },
-    pavosDesc:       { ES: "Recarga de paVos rápida y segura",              EN: "Fast and safe V-Bucks top-up"             },
+    pavosTitle:         { ES: "Recarga de paVos",                     EN: "V-Bucks Top-Up"                   },
+    pavosInfoBoxTitle:  { ES: "¿Qué son los paVos?",                  EN: "What are V-Bucks?"                },
+    pavosInfoBoxDesc:   {
+      ES: "Los paVos son la moneda oficial de Fortnite. Con ellos puedes comprar outfits, picos, planeadores, bailes y más en la tienda del juego.",
+      EN: "V-Bucks are Fortnite's official currency. Use them to buy outfits, pickaxes, gliders, emotes and more in the item shop.",
+    },
+    pavosInfoReqs:      { ES: "📋 Datos necesarios para la recarga:",  EN: "📋 Required data for top-up:"    },
+    pavosInfoReq1:      { ES: "🎮 Usuario de Epic Games",              EN: "🎮 Epic Games username"           },
+    pavosInfoReq2:      { ES: "🔒 Contraseña de la cuenta Epic",       EN: "🔒 Epic account password"         },
+    pavosInfoDelivery:  { ES: "⚡ Entrega inmediata al iniciar sesión en tu cuenta.", EN: "⚡ Instant delivery once we log into your account." },
+    pavosInfoFriends:   { ES: "👥 No necesitas agregar cuentas amigas para recarga de paVos.", EN: "👥 No need to add friend accounts for V-Bucks top-up." },
+    pavosInfoSafe:      { ES: "🔒 Proceso 100% seguro. No compartimos ni almacenamos tus credenciales.", EN: "🔒 100% safe process. We never share or store your credentials." },
 
     /* ── Paquetes ── */
-    packagesTitle:   { ES: "Paquetes de Fortnite",           EN: "Fortnite Bundles"             },
-    packagesInfo:    { ES: "Encuentra tu paquete favorito de la Tienda de Fortnite.", EN: "Find your favorite bundle in the Fortnite Shop." },
-    packDesc:        { ES: "Adquiere tu paquete ahora!",     EN: "Get your bundle now!"         },
+    packagesTitle:       { ES: "Paquetes de Fortnite",                EN: "Fortnite Bundles"                 },
+    packagesInfoTitle:   { ES: "¿Qué incluyen los paquetes?",         EN: "What's included in bundles?"      },
+    packagesInfoDesc:    {
+      ES: "Los paquetes de Fortnite incluyen cosméticos exclusivos como outfits, picos, planeadores y accesorios que no están disponibles en la tienda regular.",
+      EN: "Fortnite bundles include exclusive cosmetics such as outfits, pickaxes, gliders and accessories not available in the regular item shop.",
+    },
+    packagesInfoNote1:   { ES: "✨ Algunos paquetes incluyen paVos adicionales.", EN: "✨ Some bundles include bonus V-Bucks."       },
+    packagesInfoNote2:   { ES: "🎮 Se entregan directamente en tu cuenta de Epic Games.", EN: "🎮 Delivered directly to your Epic Games account." },
+    packagesInfoNote3:   { ES: "🔒 Solo necesitas tu usuario y contraseña de Epic.", EN: "🔒 You only need your Epic username and password." },
+    packagesInfoSafe:    { ES: "🛡️ Proceso seguro y rápido garantizado.", EN: "🛡️ Fast and safe process guaranteed."              },
 
     /* ── Pase de Batalla ── */
-    bpTitle:         { ES: "Pase de Batalla",                EN: "Battle Pass"                  },
-    bpInfo:          { ES: "Sube de nivel con el Pase de Batalla y desbloquea recompensas épicas.", EN: "Level up with the Battle Pass and unlock epic rewards." },
-    bpClubDesc:      { ES: "La suscripción mensual se activa por Xbox", EN: "The monthly subscription is activated via Xbox" },
-    bpBattleDesc:    { ES: "¡Compra ahora el Pase de Batalla!",  EN: "Buy the Battle Pass now!"    },
-    bpOGDesc:        { ES: "¡Compra ahora el Pase de Orígenes!", EN: "Buy the OG Pass now!"         },
-    bpMusicDesc:     { ES: "¡Compra ahora el Pase Musical!",     EN: "Buy the Music Pass now!"      },
-    bpLegoDesc:      { ES: "¡Compra ahora el Pase de LEGO!",     EN: "Buy the LEGO Pass now!"       },
+    bpTitle:            { ES: "Pase de Batalla",                      EN: "Battle Pass"                      },
+    bpInfoTitle:        { ES: "¿Cuál es la diferencia?",              EN: "What's the difference?"           },
+
+    /* Club de Fortnite */
+    bpClubTitle:        { ES: "🎮 Club de Fortnite",                  EN: "🎮 Fortnite Club"                  },
+    bpClubDesc:         {
+      ES: "Suscripción mensual que incluye 1.000 paVos al mes, el Pase de Batalla de la temporada actual y cosmético exclusivo del mes. Se activa mediante Xbox.",
+      EN: "Monthly subscription that includes 1,000 V-Bucks per month, the current season Battle Pass and an exclusive monthly cosmetic. Activated via Xbox.",
+    },
+
+    /* Battle Pass */
+    bpBattleTitle:      { ES: "⭐ Battle Pass",                       EN: "⭐ Battle Pass"                    },
+    bpBattleDesc:       {
+      ES: "Desbloquea más de 100 recompensas exclusivas durante la temporada: outfits, picos, planeadores, bailes, pantallas de carga y paVos.",
+      EN: "Unlock over 100 exclusive rewards during the season: outfits, pickaxes, gliders, emotes, loading screens and V-Bucks.",
+    },
+
+    /* Pases especiales */
+    bpSpecialTitle:     { ES: "🎵 Pases Especiales",                  EN: "🎵 Special Passes"                 },
+    bpSpecialDesc:      {
+      ES: "Pase Musical, Pase de LEGO y Pase OG desbloquean recompensas exclusivas de cada modo de juego especial (Festival, LEGO Fortnite y Fortnite OG).",
+      EN: "Music Pass, LEGO Pass and OG Pass unlock exclusive rewards for each special game mode (Festival, LEGO Fortnite and Fortnite OG).",
+    },
+
+    bpInfoActivation:   { ES: "🎮 Usuario y contraseña de Epic Games requeridos.", EN: "🎮 Epic Games username and password required." },
+    bpInfoSafe:         { ES: "🔒 Entrega segura y rápida garantizada.",           EN: "🔒 Safe and fast delivery guaranteed."        },
   },
 
   /* ══════════════════════════════════════════ WILD RIFT ══ */

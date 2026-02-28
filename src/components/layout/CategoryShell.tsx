@@ -1,22 +1,18 @@
+// src/components/layout/CategoryShell.tsx
 import type { ReactNode } from "react";
 
 interface CategoryShellProps {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
+  title:     string;
+  subtitle?: ReactNode;   // acepta string O JSX para resaltar partes
+  children:  ReactNode;
 }
 
-const CategoryShell = ({
-  title,
-  subtitle,
-  children,
-}: CategoryShellProps) => {
+const CategoryShell = ({ title, subtitle, children }: CategoryShellProps) => {
   return (
     <div className="min-h-screen text-white bg-[#18181C]">
-      {/* CONTENIDO */}
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-16">
 
-        {/* HEADER DE CATEGORÍA */}
+        {/* HEADER */}
         <div className="text-center mb-14">
           <h1
             className="text-4xl md:text-5xl font-black uppercase tracking-widest mb-4"
@@ -37,7 +33,6 @@ const CategoryShell = ({
           <div className="mt-6 w-24 h-1 bg-blue-500 mx-auto rounded-full" />
         </div>
 
-        {/* CONTENIDO DINÁMICO */}
         {children}
       </div>
     </div>

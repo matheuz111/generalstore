@@ -45,7 +45,7 @@ const FortniteNavButtons = () => {
     {
       to: "/fortnite/pase-de-batalla",
       labelKey: "navBP",
-      bg: "#d97706",
+      bg: "#1d4ed8",   // ← cambiado de naranja #d97706 a azul
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7">
           <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/>
@@ -70,11 +70,11 @@ const FortniteNavButtons = () => {
         <button
           key={btn.to}
           onClick={() => navigate(btn.to)}
-          className="flex flex-col items-center justify-center gap-2 w-24 h-24 rounded-2xl border-2 border-black/30 shadow-lg hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200 text-white font-black text-[11px] uppercase text-center leading-tight"
+          className="flex flex-col items-center justify-center gap-2 w-24 h-24 rounded-2xl border-2 border-black/30 shadow-lg hover:scale-105 hover:brightness-110 active:scale-95 transition-all duration-200 text-white font-black text-[11px] uppercase text-center leading-tight cursor-pointer"
           style={{
             background: btn.bg,
             fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
-            boxShadow: `0 4px 20px ${btn.bg}55`,
+            boxShadow:  `0 4px 20px ${btn.bg}55`,
           }}
         >
           {btn.icon}

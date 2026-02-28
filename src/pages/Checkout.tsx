@@ -14,15 +14,23 @@ const SERVERS   = ["America", "Europe", "Asia", "Taiwan"];
 const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
 
 const ROBLOX_PREFIXES     = ["rbx-", "gp-"];
-const UID_SERVER_PREFIXES = ["wc-", "gi-", "zzz-", "wuwa-", "pk-"];
+const UID_SERVER_PREFIXES = ["wc-", "gi-", "zzz-", "wuwa-", "pk-", "lat-", "hok-"];
 const DISCORD_PREFIXES    = ["discord-"];
-const ALL_KNOWN_PREFIXES  = [...ROBLOX_PREFIXES, ...UID_SERVER_PREFIXES, ...DISCORD_PREFIXES, "hsr-", "hok-", "lat-"];
+const ALL_KNOWN_PREFIXES  = [...ROBLOX_PREFIXES, ...UID_SERVER_PREFIXES, ...DISCORD_PREFIXES, "hsr-"];
 
 const anyItem = (items: { id: string }[], prefixes: string[]) =>
   items.some((item) => prefixes.some((p) => item.id.startsWith(p)));
 
 const isFortniteItem = (id: string) =>
   !ALL_KNOWN_PREFIXES.some((p) => id.startsWith(p));
+
+/* ── Juegos que NO necesitan servidor ── */
+const NO_SERVER_PREFIXES = ["lat-", "hok-"];
+const needsServer = (items: { id: string }[]) =>
+  items.some((item) =>
+    UID_SERVER_PREFIXES.some((p) => item.id.startsWith(p)) &&
+    !NO_SERVER_PREFIXES.some((p) => item.id.startsWith(p))
+  );
 
 /* ── Input reutilizable ── */
 const Field = ({
@@ -58,9 +66,11 @@ const Checkout = () => {
   const hasGamePass  = anyItem(cartItems, ["gp-"]);
   const hasUIDServer = anyItem(cartItems, UID_SERVER_PREFIXES);
   const hasDiscord   = anyItem(cartItems, DISCORD_PREFIXES);
+  const showServer   = needsServer(cartItems);
 
   const [name,          setName]          = useState(user?.username || "");
   const [email,         setEmail]         = useState(user?.email    || "");
+  const [phone,         setPhone]         = useState(user?.phone    || "");
   const [epicUser,      setEpicUser]      = useState("");
   const [uid,           setUid]           = useState("");
   const [server,        setServer]        = useState("");
@@ -71,16 +81,16 @@ const Checkout = () => {
 
   /* ── Enviar email de recibo ── */
   const sendReceiptEmail = async (orderId: number) => {
-    console.log("KEY:", import.meta.env.VITE_INTERNAL_API_KEY);
     setEmailStatus("sending");
 
     const formData: Record<string, string> = {
       name,
-      ...(hasFortnite  && epicUser    && { epicUser }),
-      ...(hasUIDServer && uid         && { uid }),
-      ...(hasUIDServer && server      && { server }),
-      ...(hasGamePass  && gamePassLink && { gamePassLink }),
-      ...(hasDiscord   && discordType  && { discordType }),
+      ...(phone                              && { phone }),
+      ...(hasFortnite  && epicUser           && { epicUser }),
+      ...(hasUIDServer && uid                && { uid }),
+      ...(hasUIDServer && showServer && server && { server }),
+      ...(hasGamePass  && gamePassLink       && { gamePassLink }),
+      ...(hasDiscord   && discordType        && { discordType }),
       ...(notes && { notes }),
     };
 
@@ -112,11 +122,9 @@ const Checkout = () => {
       if (res.ok) {
         setEmailStatus("sent");
       } else {
-        console.warn("Email no enviado, pero el pedido fue registrado.");
         setEmailStatus("failed");
       }
-    } catch (err) {
-      console.warn("No se pudo conectar al backend para enviar el email:", err);
+    } catch {
       setEmailStatus("failed");
     }
   };
@@ -130,24 +138,23 @@ const Checkout = () => {
     const formData: Record<string, string> = {
       name,
       email,
+      ...(phone                              && { phone }),
       ...(hasFortnite  && { epicUser }),
-      ...(hasUIDServer && { uid, server }),
+      ...(hasUIDServer && { uid }),
+      ...(hasUIDServer && showServer         && { server }),
       ...(hasGamePass  && { gamePassLink }),
       ...(hasDiscord   && { discordType }),
       notes,
     };
 
-    // Guardar en localStorage (igual que antes)
     localStorage.setItem("kidstore_last_order", JSON.stringify({
       orderId, user, items: cartItems, paymentMethod, currency,
       formData,
       total, createdAt: new Date().toISOString(),
     }));
 
-    // Enviar email (en paralelo, no bloquea la navegación si falla)
     sendReceiptEmail(orderId);
 
-    // Navegar a confirmación después de 1.2s
     setTimeout(() => {
       clearCart();
       navigate("/orden-confirmada");
@@ -195,7 +202,6 @@ const Checkout = () => {
           <span className="text-blue-400">{fmt(total)}</span>
         </div>
 
-        {/* Estado del email (feedback visual) */}
         {emailStatus === "sending" && (
           <div className="mt-4 flex items-center gap-2 text-sm text-blue-400">
             <span className="w-3 h-3 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
@@ -223,6 +229,7 @@ const Checkout = () => {
         {/* Campos base */}
         <Field value={name}  onChange={setName}  placeholder={t("checkout", "name")} />
         <Field value={email} onChange={setEmail} placeholder={t("checkout", "email")} type="email" />
+        <Field value={phone} onChange={setPhone} placeholder="Número de teléfono (opcional)" type="tel" />
 
         {/* Fortnite */}
         {hasFortnite && (
@@ -242,20 +249,22 @@ const Checkout = () => {
           </>
         )}
 
-        {/* UID + Servidor */}
+        {/* UID + Servidor (solo si el juego lo necesita) */}
         {hasUIDServer && (
           <>
             <SectionLabel color="text-yellow-400" label={t("checkout", "sectionGame")} />
             <Field value={uid} onChange={setUid} placeholder={t("checkout", "uid")} />
-            <select
-              value={server} onChange={(e) => setServer(e.target.value)}
-              className="w-full bg-black/40 px-4 py-3 rounded-lg border border-white/10 focus:border-blue-500 focus:outline-none transition text-white appearance-none cursor-pointer"
-            >
-              <option value="" disabled>{t("checkout", "selectServer")}</option>
-              {SERVERS.map((s) => (
-                <option key={s} value={s} className="bg-[#0b1120]">{s}</option>
-              ))}
-            </select>
+            {showServer && (
+              <select
+                value={server} onChange={(e) => setServer(e.target.value)}
+                className="w-full bg-black/40 px-4 py-3 rounded-lg border border-white/10 focus:border-blue-500 focus:outline-none transition text-white appearance-none cursor-pointer"
+              >
+                <option value="" disabled>{t("checkout", "selectServer")}</option>
+                {SERVERS.map((s) => (
+                  <option key={s} value={s} className="bg-[#0b1120]">{s}</option>
+                ))}
+              </select>
+            )}
           </>
         )}
 

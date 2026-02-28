@@ -1,32 +1,47 @@
 // src/pages/fortnite/FortniteRecargaPavos.tsx
-//
-// 🖼️  IMÁGENES: pon tus archivos en public/images/fortnite/pavos/
-//   Ejemplo:  image: "/images/fortnite/pavos/1000.png"
-
 import { useLang } from "../../context/LangContext";
 import FortniteProductLayout from "./FortniteProductLayout";
 import type { FnProduct } from "./FortniteProductLayout";
 
-const FortniteRecargaPavos = () => {
-  const { t }  = useLang();
-  const desc   = t("fortnite", "pavosDesc");
+const PAVOS: FnProduct[] = [
+  { id: "pavos-1000",  name: "1.000 paVos",  desc: "", pricePEN: 20.90,  image: "/images/fortnite/pavos/vbucks-1000.png"  },
+  { id: "pavos-2800",  name: "2.800 paVos",  desc: "", pricePEN: 52.90,  image: "/images/fortnite/pavos/vbucks-2800.png"  },
+  { id: "pavos-5000",  name: "5.000 paVos",  desc: "", pricePEN: 76.90,  image: "/images/fortnite/pavos/vbucks-5000.png"  },
+  { id: "pavos-13500", name: "13.500 paVos", desc: "", pricePEN: 179.90, image: "/images/fortnite/pavos/vbucks-13500.png" },
+];
 
-  const PRODUCTS: FnProduct[] = [
-    { id: "vb-1000",  name: "1 000 paVos",  desc, pricePEN: 22.00,  image: "" },
-    { id: "vb-2000",  name: "2 000 paVos",  desc, pricePEN: 42.00,  image: "" },
-    { id: "vb-2800",  name: "2 800 paVos",  desc, pricePEN: 55.00,  image: "" },
-    { id: "vb-5000",  name: "5 000 paVos",  desc, pricePEN: 85.00,  image: "" },
-    { id: "vb-6000",  name: "6 000 paVos",  desc, pricePEN: 99.00,  image: "" },
-    { id: "vb-7800",  name: "7 800 paVos",  desc, pricePEN: 135.00, image: "" },
-    { id: "vb-10000", name: "10 000 paVos", desc, pricePEN: 165.00, image: "" },
-    { id: "vb-13500", name: "13 500 paVos", desc, pricePEN: 199.00, image: "" },
-  ];
+const FortniteRecargaPavos = () => {
+  const { t } = useLang();
+
+  const infoBox = (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+      <h3 className="text-white font-black text-lg" style={{ fontFamily: "BurbankBig" }}>
+        {t("fortnite", "pavosInfoBoxTitle")}
+      </h3>
+      <p className="text-white/60 text-sm leading-relaxed">
+        {t("fortnite", "pavosInfoBoxDesc")}
+      </p>
+      <div className="border-t border-white/10 pt-4 space-y-2">
+        <p className="text-white/80 font-bold text-sm">{t("fortnite", "pavosInfoReqs")}</p>
+        <ul className="space-y-1 text-white/60 text-sm">
+          <li>{t("fortnite", "pavosInfoReq1")}</li>
+          <li>{t("fortnite", "pavosInfoReq2")}</li>
+        </ul>
+      </div>
+      <div className="space-y-1 text-sm text-white/60 border-t border-white/10 pt-4">
+        <p>{t("fortnite", "pavosInfoDelivery")}</p>
+        <p>{t("fortnite", "pavosInfoFriends")}</p>
+        <p>{t("fortnite", "pavosInfoSafe")}</p>
+      </div>
+    </div>
+  );
 
   return (
     <FortniteProductLayout
       title={t("fortnite", "pavosTitle")}
-      info={t("fortnite", "pavosInfo")}
-      products={PRODUCTS}
+      info=""
+      products={PAVOS}
+      infoBox={infoBox}
     />
   );
 };

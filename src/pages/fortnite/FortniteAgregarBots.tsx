@@ -11,8 +11,8 @@ const ACCOUNTS = [
 ];
 
 const FortniteAgregarBots = () => {
-  const navigate        = useNavigate();
-  const { t }           = useLang();
+  const navigate            = useNavigate();
+  const { t }               = useLang();
   const [copied, setCopied] = useState<string | null>(null);
 
   const handleCopy = (id: string) => {
@@ -21,8 +21,16 @@ const FortniteAgregarBots = () => {
     setTimeout(() => setCopied(null), 2000);
   };
 
+  const subtitle = (
+    <>
+      {t("fortnite", "botsSubtitle")}{" "}
+      <span className="text-orange-400 font-black">{t("fortnite", "botsHours")}</span>{" "}
+      {t("fortnite", "botsHoursHint")}
+    </>
+  );
+
   return (
-    <CategoryShell title={t("fortnite", "botsTitle")} subtitle="">
+    <CategoryShell title={t("fortnite", "botsTitle")} subtitle={subtitle}>
       <FortniteNavButtons />
 
       {/* Breadcrumb */}
@@ -36,31 +44,16 @@ const FortniteAgregarBots = () => {
         {t("fortnite", "backHome")} / <span className="text-white">{t("fortnite", "botsTitle")}</span>
       </button>
 
-      {/* Subtítulo */}
-      <p className="text-white/60 text-base max-w-xl mx-auto text-center mb-10">
-        {t("fortnite", "botsSubtitle")}{" "}
-        <span className="text-orange-400 font-black">{t("fortnite", "botsHours")}</span>{" "}
-        {t("fortnite", "botsHoursHint")}
-      </p>
-
       {/* Grid de cuentas */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {ACCOUNTS.map((id) => (
           <div
             key={id}
-            className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 flex flex-col items-center gap-3 hover:border-orange-500/40 transition"
+            className="bg-[#1a1a1a] border border-white/10 rounded-2xl p-5 flex flex-col items-center gap-3 hover:border-blue-500/40 transition"
           >
-            {/* Ícono gamepad */}
-            <div className="w-8 h-8 flex items-center justify-center self-start">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth={1.5} className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 5H9a7 7 0 000 14h6a7 7 0 000-14z"/>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9v4m-2-2h4M16 10h.01M15 13h.01"/>
-              </svg>
-            </div>
-
             {/* Avatar */}
-            <div className="w-20 h-20 rounded-full bg-[#2a1a1a] border-2 border-orange-900/50 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth={1.5} className="w-10 h-10">
+            <div className="w-20 h-20 rounded-full bg-[#0f1a2e] border-2 border-blue-900/50 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth={1.5} className="w-10 h-10">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </div>
@@ -79,7 +72,7 @@ const FortniteAgregarBots = () => {
             {/* Botón copiar */}
             <button
               onClick={() => handleCopy(id)}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-orange-900/60 bg-orange-950/40 hover:bg-orange-900/50 text-orange-400 text-xs font-bold transition active:scale-95"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-blue-900/60 bg-blue-950/40 hover:bg-blue-900/50 text-blue-400 text-xs font-bold transition active:scale-95 cursor-pointer"
             >
               {copied === id ? (
                 <>
