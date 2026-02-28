@@ -6,14 +6,14 @@ import { useAuth } from "../context/AuthContext";
 
 interface OrderItem { id: string; name: string; price: number; quantity: number }
 interface OrderData {
-  orderId: number;
-  user: { username: string; email: string } | null;
-  items: OrderItem[];
+  orderId:       number;
+  user:          { username: string; email: string } | null;
+  items:         OrderItem[];
   paymentMethod: string;
-  formData: Record<string, string>;
-  total: number;
-  currency: string;
-  createdAt: string;
+  formData:      Record<string, string>;
+  total:         number;
+  currency:      string;
+  createdAt:     string;
 }
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
@@ -37,16 +37,22 @@ const OrderSuccess = () => {
 
   useEffect(() => { if (!order) navigate("/"); }, [order, navigate]);
 
-  /* ── Guardar en backend si el usuario está logueado ── */
+  /* ── Siempre guardar el pedido para el panel admin ──
+     Si hay usuario logueado → se asocia a su email
+     Si es invitado         → se guarda con el email del formulario (formData.email)
+     En ambos casos el admin puede verlo                              */
   useEffect(() => {
-    if (!order || !user || savedRef.current) return;
+    if (!order || savedRef.current) return;
     savedRef.current = true;
 
+    // Email: preferimos el del usuario logueado, si no el del formulario
+    const emailToSave = user?.email || order.formData?.email || "guest@kidstore";
+
     fetch(`${BACKEND_URL}/orders`, {
-      method: "POST",
+      method:  "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: user.email,
+        email: emailToSave,
         order: {
           orderId:       order.orderId,
           items:         order.items,
@@ -59,7 +65,7 @@ const OrderSuccess = () => {
         },
       }),
     }).catch(() => {
-      // Fallo silencioso — el pedido ya se guardó en localStorage
+      // Fallo silencioso — el pedido ya está en localStorage
     });
   }, [order, user]);
 
@@ -70,7 +76,7 @@ const OrderSuccess = () => {
   const symbol = SYMBOLS[order.currency] ?? "S/";
 
   const whatsappMessage = encodeURIComponent(
-    `🧾 *NUEVO PEDIDO - KIDSTORE*\n\n📌 Pedido N°: ${order.orderId}\n👤 Cliente: ${order.user?.username || "Invitado"}\n📧 Email: ${order.user?.email || "No registrado"}\n\n🛒 Productos:\n${order.items.map((i) => `• ${i.name} x${i.quantity} - ${symbol} ${(i.price * i.quantity).toFixed(2)}`).join("\n")}\n\n💳 Método de pago: ${order.paymentMethod}\n💰 Total: ${symbol} ${order.total.toFixed(2)}\n\n⏰ Fecha: ${new Date(order.createdAt).toLocaleString()}`
+    `🧾 *NUEVO PEDIDO - KIDSTORE*\n\n📌 Pedido N°: ${order.orderId}\n👤 Cliente: ${order.user?.username || order.formData?.name || "Invitado"}\n📧 Email: ${order.user?.email || order.formData?.email || "No registrado"}\n\n🛒 Productos:\n${order.items.map((i) => `• ${i.name} x${i.quantity} - ${symbol} ${(i.price * i.quantity).toFixed(2)}`).join("\n")}\n\n💳 Método de pago: ${order.paymentMethod}\n💰 Total: ${symbol} ${order.total.toFixed(2)}\n\n⏰ Fecha: ${new Date(order.createdAt).toLocaleString()}`
   );
 
   return (
@@ -97,6 +103,7 @@ const OrderSuccess = () => {
           <strong>{t("orderSuccess", "methodLabel")}</strong> {order.paymentMethod}
         </p>
 
+        {/* Aviso solo si NO está logueado */}
         {!user && (
           <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs rounded-lg px-3 py-2 mb-4">
             💡 ¿Quieres ver el historial de tus pedidos?{" "}

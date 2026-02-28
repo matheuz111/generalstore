@@ -66,7 +66,7 @@ const FortniteSubNav = () => {
 
   return (
     <div className="w-full bg-[#080d1a]/90 backdrop-blur-xl border-b border-white/8">
-      <div className="max-w-7xl mx-auto px-6 flex items-center gap-0 overflow-x-auto scrollbar-hide">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-0 overflow-x-auto scrollbar-hide">
         {FNAV.map((btn) => {
           const active = isActive(btn.to, btn.exact);
           return (

@@ -6,7 +6,70 @@ import { useCart } from "../context/CartContext";
 import { useCurrency } from "../context/CurrencyContext";
 import { useLang } from "../context/LangContext";
 
-/* ── Countdown ── */
+/* ── Countdown hasta reset de tienda (medianoche UTC = 7pm EST) ── */
+function useShopResetCountdown() {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    function calc() {
+      const now   = new Date();
+      const reset = new Date();
+      reset.setUTCHours(0, 0, 0, 0);
+      if (reset.getTime() <= now.getTime()) reset.setUTCDate(reset.getUTCDate() + 1);
+      const diff    = reset.getTime() - now.getTime();
+      const hours   = Math.floor(diff / 3_600_000);
+      const minutes = Math.floor((diff % 3_600_000) / 60_000);
+      const seconds = Math.floor((diff % 60_000) / 1_000);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      setTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+    }
+    calc();
+    const id = setInterval(calc, 1_000);
+    return () => clearInterval(id);
+  }, []);
+
+  return timeLeft;
+}
+
+/* ── Header estilo Fortnite con fecha y countdown ── */
+const FortniteShopHeader = () => {
+  const countdown = useShopResetCountdown();
+  const { lang }  = useLang();
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString(lang === "EN" ? "en-US" : "es-ES", {
+    weekday: "long",
+    day:     "numeric",
+    month:   "long",
+    year:    "numeric",
+  }).toUpperCase();
+
+  return (
+    <div className="text-center py-4 pb-10">
+      <h1
+        className="text-3xl md:text-5xl font-black uppercase italic text-white drop-shadow-lg"
+        style={{
+          fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
+          textShadow: "2px 2px 0px rgba(0,0,0,0.8), 0 0 30px rgba(0,150,255,0.2)",
+        }}
+      >
+        {lang === "EN" ? "FORTNITE ITEM SHOP" : "TIENDA DE ARTÍCULOS DE FORTNITE"}
+      </h1>
+      <p
+        className="text-cyan-400 font-black uppercase text-xs md:text-sm tracking-widest mt-2"
+        style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+      >
+        {dateStr}
+      </p>
+      <p className="text-white font-bold text-lg md:text-2xl mt-3 tracking-wide">
+        {lang === "EN" ? "New items in" : "Nuevos artículos en"}{" "}
+        <span className="font-black tabular-nums">{countdown}</span>
+      </p>
+    </div>
+  );
+};
+
+/* ── Countdown por item (cuándo expira) ── */
 function useCountdown(outDate: string) {
   const [timeLeft, setTimeLeft] = useState("");
   const { t } = useLang();
@@ -129,7 +192,7 @@ const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
   );
 };
 
-/* ── Filter Drawer ── */
+/* ── Filter Drawer — panel lateral sin overlay oscuro ── */
 const FilterDrawer = ({
   sections, activeId, onSelect,
 }: {
@@ -137,12 +200,29 @@ const FilterDrawer = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { t }           = useLang();
+  const drawerRef       = useRef<HTMLDivElement>(null);
+
+  /* Cierra al hacer click fuera del panel */
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
 
   return (
-    <>
+    <div
+      ref={drawerRef}
+      className="fixed left-0 top-1/2 -translate-y-1/2 z-40 flex items-stretch"
+    >
+      {/* ── Lengüeta del botón ── */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-1.5 bg-[#0d1225] border border-white/20 hover:border-blue-400/60 text-white/70 hover:text-white px-2 py-4 rounded-r-2xl shadow-xl transition-all duration-200"
+        className="flex flex-col items-center gap-1.5 bg-[#0d1225] border border-white/20 hover:border-blue-400/60 text-white/70 hover:text-white px-2 py-4 rounded-r-2xl shadow-xl transition-all duration-200 cursor-pointer shrink-0"
         title={t("fortnite", "filterBtn")}
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -162,51 +242,64 @@ const FilterDrawer = ({
         </svg>
       </button>
 
+      {/* ── Panel desplegable — NO hay overlay, solo el panel mismo ── */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        style={{ background: "rgba(0,0,0,0.5)" }}
-        onClick={() => setOpen(false)}
-      />
-
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 z-50 bg-[#0a0f1e] border-r border-white/10 flex flex-col pt-6 pb-8 transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "-translate-x-full"}`}
+        className={`
+          transition-all duration-300 ease-in-out overflow-hidden
+          ${open ? "w-60 opacity-100" : "w-0 opacity-0 pointer-events-none"}
+        `}
       >
-        <div className="flex items-center justify-between px-4 mb-4">
-          <div className="flex items-center gap-2">
-            <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h18M7 8h10M11 12h6M13 16h4" />
-            </svg>
-            <span className="text-white font-black uppercase text-sm tracking-widest" style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}>
+        <div className="w-60 bg-[#0b1022]/98 border border-white/10 border-l-0 rounded-r-2xl shadow-2xl flex flex-col"
+          style={{ maxHeight: "65vh" }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+            <span
+              className="text-white font-black uppercase text-xs tracking-widest"
+              style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+            >
               {t("fortnite", "filterNav")}
             </span>
+            <button
+              onClick={() => setOpen(false)}
+              className="text-white/30 hover:text-white transition cursor-pointer ml-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white transition">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
 
-        <nav className="overflow-y-auto flex-1 px-2 space-y-1">
-          {sections.map((section) => {
-            const isActive = section.id === activeId;
-            return (
-              <button
-                key={section.id}
-                onClick={() => { onSelect(section.id); setOpen(false); }}
-                className={`w-full text-left px-4 py-3 rounded-xl font-black uppercase text-sm tracking-wide transition-all duration-200 flex items-center justify-between gap-2 ${
-                  isActive ? "bg-white/15 text-white border border-white/30" : "text-white/60 hover:text-white hover:bg-white/8"
-                }`}
-                style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
-              >
-                <span className="leading-tight">{section.titleEs}</span>
-                {isActive && <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0 animate-pulse" />}
-              </button>
-            );
-          })}
-        </nav>
-      </aside>
-    </>
+          {/* Lista de secciones */}
+          <nav className="overflow-y-auto flex-1">
+            {sections.map((section) => {
+              const isActive = section.id === activeId;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => { onSelect(section.id); setOpen(false); }}
+                  className={`
+                    w-full text-left px-4 py-3 text-xs font-black uppercase tracking-wide
+                    transition-colors duration-150 flex items-center justify-between gap-2 cursor-pointer
+                    border-b border-white/5 last:border-0
+                    ${isActive
+                      ? "bg-white/10 text-white"
+                      : "text-white/55 hover:text-white hover:bg-white/6"
+                    }
+                  `}
+                  style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+                >
+                  <span className="truncate leading-tight">{section.titleEs}</span>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0 animate-pulse" />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -267,13 +360,20 @@ const Fortnite = () => {
     <CategoryShell title="Fortnite" subtitle="">
       <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
         <div className="text-6xl">⚠️</div>
-        <h2 className="text-2xl font-black uppercase italic text-white" style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}>
+        <h2
+          className="text-2xl font-black uppercase italic text-white"
+          style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+        >
           {t("fortnite", "errorTitle")}
         </h2>
         <p className="text-white/50 text-sm max-w-sm">
           {error === "503" ? t("fortnite", "errorServers") : `${t("fortnite", "errorGeneric")} (${error})`}
         </p>
-        <button onClick={loadShop} className="bg-blue-600 hover:bg-blue-500 text-white font-black uppercase px-6 py-3 rounded-xl transition active:scale-95" style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}>
+        <button
+          onClick={loadShop}
+          className="bg-blue-600 hover:bg-blue-500 text-white font-black uppercase px-6 py-3 rounded-xl transition active:scale-95"
+          style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+        >
           {t("fortnite", "retry")}
         </button>
       </div>
@@ -281,9 +381,12 @@ const Fortnite = () => {
   );
 
   return (
-    <CategoryShell title="Fortnite" subtitle={t("fortnite", "subtitle")}>
-      {/* ── Los botones de navegación ahora viven en FortniteSubNav (header) ── */}
+    <CategoryShell title="" subtitle="">
 
+      {/* ── Header con fecha y countdown ── */}
+      <FortniteShopHeader />
+
+      {/* ── Filter lateral sin overlay ── */}
       <FilterDrawer sections={sections} activeId={activeId} onSelect={handleSelect} />
 
       <div className="space-y-12">

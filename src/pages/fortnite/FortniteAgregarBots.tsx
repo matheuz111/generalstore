@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryShell from "../../components/layout/CategoryShell";
-import FortniteNavButtons from "./FortniteNavButtons";
 import { useLang } from "../../context/LangContext";
 
 const ACCOUNTS = [
@@ -31,7 +30,6 @@ const FortniteAgregarBots = () => {
 
   return (
     <CategoryShell title={t("fortnite", "botsTitle")} subtitle={subtitle}>
-      <FortniteNavButtons />
 
       {/* Breadcrumb */}
       <button

@@ -5,7 +5,6 @@ import CategoryShell from "../../components/layout/CategoryShell";
 import { useCart } from "../../context/CartContext";
 import { useLang } from "../../context/LangContext";
 import { usePriceConverter } from "../../hooks/usePriceConverter";
-import FortniteNavButtons from "./FortniteNavButtons";
 
 export type FnProduct = {
   id:       string;
@@ -87,7 +86,6 @@ const FortniteProductLayout = ({ title, products, infoBox }: Props) => {
 
   return (
     <CategoryShell title={title} subtitle="">
-      <FortniteNavButtons />
 
       {/* Breadcrumb */}
       <button
