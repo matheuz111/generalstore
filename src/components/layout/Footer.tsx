@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
 
         <div className="text-xs text-gray-500 select-none">
-          © {new Date().getFullYear()} KIDSTORE. {t("footer", "rights")}
+          © {new Date().getFullYear()} KIDSTORE {t("footer", "rights")}
         </div>
       </div>
     </footer>
