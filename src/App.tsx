@@ -1,32 +1,33 @@
 // src/App.tsx
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
-import Header from "./components/layout/Header";
-import CartDrawer from "./components/cart/CartDrawer";
-import Footer from "./components/layout/Footer";
+import Header         from "./components/layout/Header";
+import CartDrawer     from "./components/cart/CartDrawer";
+import Footer         from "./components/layout/Footer";
+import FortniteSubNav from "./components/layout/FortniteSubNav";
 
-import Home from "./pages/Home";
+import Home  from "./pages/Home";
 import Terms from "./pages/Terms";
 
 /* ================= CATEGORÍAS ================= */
 import Fortnite from "./pages/Fortnite";
 import WildRift from "./pages/WildRift";
-import Roblox from "./pages/Roblox";
-import Marvel from "./pages/Marvel";
-import Pokemon from "./pages/Pokemon";
-import Genshin from "./pages/Genshin";
-import Zzz from "./pages/Zzz";
-import Honkai from "./pages/Honkai";
-import Wuwa from "./pages/Wuwa";
-import Honor from "./pages/Honor";
-import Discord from "./pages/Discord";
+import Roblox   from "./pages/Roblox";
+import Marvel   from "./pages/Marvel";
+import Pokemon  from "./pages/Pokemon";
+import Genshin  from "./pages/Genshin";
+import Zzz      from "./pages/Zzz";
+import Honkai   from "./pages/Honkai";
+import Wuwa     from "./pages/Wuwa";
+import Honor    from "./pages/Honor";
+import Discord  from "./pages/Discord";
 
 /* ================= FORTNITE SUBPÁGINAS ================= */
-import FortniteAgregarBots   from "./pages/fortnite/FortniteAgregarBots";
-import FortniteRecargaPavos  from "./pages/fortnite/FortniteRecargaPavos";
-import FortnitePaquetes      from "./pages/fortnite/FortnitePaquetes";
-import FortnitePaseBatalla   from "./pages/fortnite/FortnitePaseBatalla";
+import FortniteAgregarBots  from "./pages/fortnite/FortniteAgregarBots";
+import FortniteRecargaPavos from "./pages/fortnite/FortniteRecargaPavos";
+import FortnitePaquetes     from "./pages/fortnite/FortnitePaquetes";
+import FortnitePaseBatalla  from "./pages/fortnite/FortnitePaseBatalla";
 
 /* ================= CUENTA ================= */
 import AccountDashboard from "./pages/AccountDashboard";
@@ -42,14 +43,39 @@ import OrderSuccess from "./pages/OrderSuccess";
 
 import { useAuth } from "./context/AuthContext";
 
-/* Wrapper que oculta el header/footer en el panel admin */
+// altura header ≈ 88px, subnav fortnite ≈ 45px
+const HEADER_H   = "88px";
+const SUBNAV_H   = "45px";
+const TOTAL_FN_H = `calc(${HEADER_H} + ${SUBNAV_H})`;
+
 const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
   const { isAdmin } = useAuth();
+  const location    = useLocation();
+
+  const isFortnite = !isAdmin && location.pathname.startsWith("/fortnite");
 
   return (
     <>
       {!isAdmin && <Header onCartClick={onCartClick} />}
-      <main className={isAdmin ? "" : "pt-24 min-h-screen bg-transparent"}>
+
+      {/* SubNav Fortnite — fixed justo debajo del header */}
+      {isFortnite && (
+        <div
+          className="fixed left-0 w-full z-40"
+          style={{ top: HEADER_H }}
+        >
+          <FortniteSubNav />
+        </div>
+      )}
+
+      <main
+        className={isAdmin ? "" : "min-h-screen bg-transparent"}
+        style={
+          isAdmin
+            ? {}
+            : { paddingTop: isFortnite ? TOTAL_FN_H : HEADER_H }
+        }
+      >
         <Routes>
           {/* HOME */}
           <Route path="/" element={<Home />} />
@@ -85,7 +111,7 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           <Route path="/discord"           element={<Discord />} />
 
           {/* ── CHECKOUT ── */}
-          <Route path="/checkout"        element={<Checkout />} />
+          <Route path="/checkout"         element={<Checkout />} />
           <Route path="/orden-confirmada" element={<OrderSuccess />} />
 
           {/* 404 */}
@@ -97,6 +123,7 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           } />
         </Routes>
       </main>
+
       {!isAdmin && <Footer />}
     </>
   );

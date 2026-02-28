@@ -76,9 +76,9 @@ const AccountMenu = () => {
         style={{ fontFamily: "BurbankSmall" }}
       >
         <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs font-black">
-          {user.username[0].toUpperCase()}
+          {(user.username ?? user.email ?? "U")[0].toUpperCase()}
         </div>
-        <span className="max-w-[80px] truncate">{user.username}</span>
+        <span className="max-w-[80px] truncate">{user.username ?? user.email}</span>
         <motion.span
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ duration: 0.2 }}
