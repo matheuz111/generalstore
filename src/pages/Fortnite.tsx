@@ -119,6 +119,42 @@ const SectionCountdown = ({ outDate }: { outDate: string }) => {
   );
 };
 
+/* ── Countdown por ítem individual ── */
+const ItemCountdown = ({ outDate }: { outDate: string }) => {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    function calc() {
+      const diff = new Date(outDate).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft("Expirado"); return; }
+      const hours   = Math.floor(diff / 3_600_000);
+      const minutes = Math.floor((diff % 3_600_000) / 60_000);
+      const seconds = Math.floor((diff % 60_000) / 1_000);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      setTimeLeft(`${pad(hours)}:${pad(minutes)}:${pad(seconds)}`);
+    }
+    calc();
+    const id = setInterval(calc, 1_000);
+    return () => clearInterval(id);
+  }, [outDate]);
+
+  const diff = new Date(outDate).getTime() - Date.now();
+  const hoursLeft = diff / 3_600_000;
+  const colorClass =
+    hoursLeft < 1   ? "bg-red-500/25 text-red-400 border-red-500/50" :
+    hoursLeft < 6   ? "bg-orange-500/25 text-orange-400 border-orange-500/50" :
+                      "bg-black/30 text-white/60 border-white/15";
+
+  return (
+    <div className={`flex items-center justify-center gap-1 border rounded-md px-2 py-1 text-[10px] font-black tabular-nums tracking-wider ${colorClass}`}>
+      <svg className="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      {timeLeft}
+    </div>
+  );
+};
+
 /* ── Shop Card ── */
 const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
   const priceValue = convertVbucks(item.vbucks);
@@ -139,12 +175,20 @@ const ShopCard = ({ item, formatPrice, convertVbucks, addToCart, t }: any) => {
           {t("fortnite", "bundle")}
         </div>
       )}
-      <div className="relative overflow-hidden rounded-xl mb-4">
+      <div className="relative overflow-hidden rounded-xl mb-2">
         <img
           src={item.image} alt={item.name}
           className="w-full aspect-square object-contain transform group-hover:scale-110 transition duration-500"
         />
       </div>
+
+      {/* ── Countdown del ítem ── */}
+      {item.outDate && (
+        <div className="mb-2">
+          <ItemCountdown outDate={item.outDate} />
+        </div>
+      )}
+
       <h3 className="font-bold text-sm md:text-base leading-tight min-h-[40px] mb-2">
         {item.name}
       </h3>
