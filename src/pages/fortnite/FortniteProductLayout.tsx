@@ -21,8 +21,6 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:border-blue-500/50 transition group flex flex-col h-full">
-
-      {/* Imagen */}
       <div className="relative overflow-hidden rounded-xl mb-4 aspect-square bg-black/30 flex items-center justify-center">
         {product.image ? (
           <img
@@ -44,12 +42,10 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
         </div>
       </div>
 
-      {/* Nombre */}
       <h3 className="font-bold text-sm md:text-base leading-tight min-h-[40px] mb-2 text-white">
         {product.name}
       </h3>
 
-      {/* Precio */}
       <div className="mt-auto flex items-center justify-between mb-3">
         <p className="text-blue-300 font-black text-xl tracking-tight">
           {format(product.pricePEN)}
@@ -59,7 +55,6 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
         </span>
       </div>
 
-      {/* Botón */}
       <button
         onClick={onAdd}
         className="w-full bg-white/10 hover:bg-white/20 py-2 rounded-xl text-xs font-bold uppercase transition active:scale-95 text-white cursor-pointer"
@@ -70,23 +65,51 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
   );
 };
 
+/* ─── Aviso Lira Turca (TRY) ─── */
+const TryNotice = () => (
+  <div className="bg-amber-500/10 border border-amber-500/40 rounded-xl p-4 flex gap-3 text-left">
+    <span className="text-2xl shrink-0">🇹🇷</span>
+    <div className="text-sm leading-relaxed">
+      <p
+        className="font-black text-amber-300 uppercase tracking-wide mb-1"
+        style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
+      >
+        Precios en Lira Turca (TRY)
+      </p>
+      <p className="text-amber-200/80">
+        Exclusivos para cuentas con región en <strong>Turquía (TRY)</strong>.
+      </p>
+      <p className="text-amber-200/60 mt-1.5 flex items-start gap-1.5">
+        <span className="mt-0.5 shrink-0">💬</span>
+        Te contactaremos por{" "}
+        <strong className="text-amber-300 ml-1">WhatsApp, Instagram, Facebook o Discord</strong>
+        {" "}para coordinar la entrega.
+      </p>
+    </div>
+  </div>
+);
+
 /* ─── Layout principal ─── */
 interface Props {
   title:    string;
   info:     string;
   products: FnProduct[];
   infoBox?: ReactNode;
+  variant?: "pavos" | "packs";
 }
 
-const FortniteProductLayout = ({ title, products, infoBox }: Props) => {
+const FortniteProductLayout = ({ title, products, infoBox, variant }: Props) => {
   const navigate      = useNavigate();
   const { addToCart } = useCart();
   const { t }         = useLang();
   const { cartPrice } = usePriceConverter();
 
   return (
-    <CategoryShell title={title} subtitle="">
-
+    <CategoryShell
+      title={title}
+      subtitle=""
+      notice={<TryNotice />}
+    >
       {/* Breadcrumb */}
       <button
         onClick={() => navigate("/fortnite")}
@@ -117,7 +140,6 @@ const FortniteProductLayout = ({ title, products, infoBox }: Props) => {
         ))}
       </div>
 
-      {/* Info box */}
       {infoBox && <div className="mt-10">{infoBox}</div>}
     </CategoryShell>
   );

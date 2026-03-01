@@ -6,7 +6,6 @@ import { useCurrency } from "../context/CurrencyContext";
 import { useLang } from "../context/LangContext";
 import { useState } from "react";
 import PaymentMethods from "../components/checkout/PaymentMethods";
-import PaymentInstructions from "../components/checkout/PaymentInstructions";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 const SYMBOLS: Record<string, string> = { PEN: "S/", USD: "$", EUR: "€" };
@@ -129,23 +128,6 @@ const getActiveGames = (items: { id: string }[]): GameConfig[] =>
   );
 
 /* ── UI Helpers ── */
-const TryNotice = () => (
-  <div className="bg-amber-500/10 border border-amber-500/40 rounded-xl p-4 flex gap-3">
-    <span className="text-2xl shrink-0">🇹🇷</span>
-    <div className="text-sm leading-relaxed">
-      <p className="font-black text-amber-300 uppercase tracking-wide mb-1" style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}>
-        Precios en Lira Turca (TRY)
-      </p>
-      <p className="text-amber-200/80">
-        Exclusivos para cuentas con región en <strong>Turquía (TRY)</strong>.
-      </p>
-      <p className="text-amber-200/60 mt-1.5 flex items-start gap-1.5">
-        <span className="mt-0.5 shrink-0">💬</span>
-        Te contactaremos por <strong className="text-amber-300 ml-1">WhatsApp, Instagram, Facebook o Discord</strong> para coordinar la entrega.
-      </p>
-    </div>
-  </div>
-);
 
 const Field = ({
   value, onChange, placeholder, type = "text", hasError = false,
@@ -191,6 +173,179 @@ const ServerSelect = ({
 );
 
 /* ════════════════════════════════════════════
+   MODAL DE PAGO
+════════════════════════════════════════════ */
+const CopyRow = ({ label, value }: { label: string; value: string }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <div className="flex items-center justify-between bg-black/40 border border-white/10 rounded-xl px-4 py-3">
+      <div>
+        <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">{label}</p>
+        <p className="text-white font-black text-sm mt-0.5">{value}</p>
+      </div>
+      <button
+        onClick={handleCopy}
+        className={`ml-3 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wide transition-all cursor-pointer active:scale-95 ${
+          copied
+            ? "bg-green-500/20 text-green-400 border border-green-500/40"
+            : "bg-white/10 hover:bg-white/20 text-white/60 hover:text-white border border-white/10"
+        }`}
+      >
+        {copied ? (
+          <><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> Copiado</>
+        ) : (
+          <><svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</>
+        )}
+      </button>
+    </div>
+  );
+};
+
+/* ── Datos por método — EDITA AQUÍ TUS DATOS REALES ── */
+const PAYMENT_DATA: Record<string, {
+  title: string; color: string; qr: string;
+  rows: { label: string; value: string }[]; note?: string;
+}> = {
+  yape: {
+    title: "Pago con YAPE",
+    color: "#6A0FD8",
+    qr:    "/images/yape.png",
+    rows:  [
+      { label: "Número", value: "963 469 586" },
+      { label: "Nombre", value: "Freddy Aystin Rodriguez Uricay" },
+    ],
+    note: "Envía el pago y adjunta el comprobante al finalizar.",
+  },
+  plin: {
+    title: "Pago con PLIN",
+    color: "#00C6A0",
+    qr:    "/images/plin.png",
+    rows:  [
+      { label: "Número", value: "963 469 586" },
+      { label: "Nombre", value: "Freddy Aystin Rodriguez Uricay" },
+    ],
+    note: "Escanea el QR con tu app bancaria y adjunta el comprobante.",
+  },
+  bcp: {
+    title: "Transferencia Bancaria",
+    color: "#003DA5",
+    qr:    "",
+    rows:  [
+      { label: "BCP",      value: "19206197697098" },
+      { label: "Interbank", value: "8983302393569" },
+      { label: "BBVA",     value: "001108140213226768" },
+      { label: "Titular",  value: "Freddy Aystin Rodriguez Uricay" },
+    ],
+    note: "Envía el comprobante con el N° de operación por WhatsApp o Instagram.",
+  },
+  binance: {
+    title: "Pago con Binance",
+    color: "#F0B90B",
+    qr:    "/images/binance.png",
+    rows:  [
+      { label: "ID Binance",  value: "XXXXXXXXXX" },
+      { label: "Red / Token", value: "BSC / USDT" },
+    ],
+    note: "El total incluye un 1% de cargo por Binance Pay. Adjunta el comprobante.",
+  },
+};
+
+interface ModalProps {
+  method: string; total: number; currency: string;
+  onConfirm: () => void; onCancel: () => void; loading: boolean;
+}
+
+const PaymentModal = ({ method, total, currency, onConfirm, onCancel, loading }: ModalProps) => {
+  const data = PAYMENT_DATA[method];
+  if (!data) return null;
+  const sym = ({ PEN: "S/", USD: "$", EUR: "€" } as Record<string,string>)[currency] ?? "S/";
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(8px)" }}
+    >
+      <div className="w-full max-w-md bg-[#0b1022] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4"
+          style={{ borderBottom: `1px solid ${data.color}33`, background: `${data.color}12` }}>
+          <h3 className="font-black uppercase text-lg tracking-wide" style={{ color: data.color, fontFamily: "'BurbankBig','Arial Black',sans-serif" }}>
+            {data.title}
+          </h3>
+          <button onClick={onCancel} className="text-white/30 hover:text-white transition cursor-pointer p-1">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4 max-h-[75vh] overflow-y-auto">
+
+          {/* QR */}
+          {data.qr && (
+            <div className="flex justify-center">
+              <div className="bg-white p-3 rounded-2xl" style={{ boxShadow: `0 0 30px ${data.color}40` }}>
+                <img src={data.qr} alt="QR de pago" className="w-56 h-56 object-contain"
+                  onError={(e) => {
+                    const el = e.target as HTMLImageElement;
+                    el.style.display = "none";
+                    const p = el.parentElement;
+                    if (p) p.innerHTML = `<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:${data.color};font-size:11px;font-weight:900;text-align:center;text-transform:uppercase">Coloca tu QR<br/>en /public/images/</div>`;
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Monto */}
+          <div className="flex items-center justify-between rounded-xl px-4 py-3 border"
+            style={{ background: `${data.color}10`, borderColor: `${data.color}30` }}>
+            <span className="text-white/60 text-sm font-bold">Monto a pagar:</span>
+            <span className="font-black text-xl" style={{ color: data.color }}>
+              {sym} {total.toFixed(2)} {currency}
+            </span>
+          </div>
+
+          {/* Filas copiables */}
+          <div className="space-y-2">
+            {data.rows.map((row) => <CopyRow key={row.label} label={row.label} value={row.value} />)}
+          </div>
+
+          {/* Nota */}
+          {data.note && (
+            <p className="text-white/40 text-xs text-center leading-relaxed">{data.note}</p>
+          )}
+
+          {/* Botones */}
+          <div className="flex flex-col gap-3 pt-2">
+            <button
+              onClick={onConfirm} disabled={loading}
+              className="w-full py-3.5 rounded-2xl font-black uppercase text-sm tracking-wide transition active:scale-[0.98] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ background: data.color, color: method === "binance" ? "#000" : "#fff" }}
+            >
+              {loading
+                ? <><span className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"/> Procesando...</>
+                : "✓ Confirmar pedido"}
+            </button>
+            <button onClick={onCancel}
+              className="w-full py-3 rounded-2xl font-bold text-sm text-white/40 hover:text-white border border-white/10 hover:border-white/25 transition cursor-pointer">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════
    CHECKOUT
 ════════════════════════════════════════════ */
 const Checkout = () => {
@@ -220,6 +375,7 @@ const Checkout = () => {
   const [fieldErrors,   setFieldErrors]   = useState<Record<string, boolean>>({});
   const [loading,       setLoading]       = useState(false);
   const [emailStatus,   setEmailStatus]   = useState<"idle"|"sending"|"sent"|"failed">("idle");
+  const [showPaymentModal,   setShowPaymentModal]   = useState(false);
 
   /* Estado dinámico por juego */
   const [gameUIDs,    setGameUIDs]    = useState<Record<string, string>>({});
@@ -301,10 +457,16 @@ const Checkout = () => {
     } catch { setEmailStatus("failed"); }
   };
 
-  /* Confirmar pedido */
-  const handleConfirm = async () => {
+  /* Confirmar → abre modal con datos de pago */
+  const handleConfirm = () => {
     if (!validate()) return;
+    setShowPaymentModal(true);
+  };
+
+  /* Confirmar final (desde el modal) → procesa el pedido */
+  const handleFinalConfirm = async () => {
     setLoading(true);
+    setShowPaymentModal(false);
     const orderId = Math.floor(100000 + Math.random() * 900000);
     localStorage.setItem("kidstore_last_order", JSON.stringify({
       orderId, user, items: cartItems, paymentMethod,
@@ -329,7 +491,7 @@ const Checkout = () => {
     );
   }
 
-  return (
+  return <>
     <div className="max-w-5xl mx-auto px-6 py-16 text-white grid md:grid-cols-2 gap-10">
 
       {/* ══════════ RESUMEN ══════════ */}
@@ -338,7 +500,6 @@ const Checkout = () => {
           {t("checkout", "summary")}
         </h2>
 
-        {hasWhatsappFn && <TryNotice />}
 
         <div className="space-y-4">
           {cartItems.map((item) => (
@@ -525,7 +686,6 @@ const Checkout = () => {
         <div className="pt-2">
           <h3 className="text-lg font-semibold mb-3">{t("checkout", "paymentMethod")}</h3>
           <PaymentMethods selected={paymentMethod} onSelect={(m) => { setPaymentMethod(m); clearError("payment"); }} />
-          <PaymentInstructions method={paymentMethod} />
           {isBinance && (
             <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl px-4 py-3 text-sm text-yellow-300 flex items-start gap-2">
               <span className="text-lg shrink-0">⚡</span>
@@ -558,7 +718,19 @@ const Checkout = () => {
         <p className="text-xs text-gray-400 text-center">{t("checkout", "terms")}</p>
       </div>
     </div>
-  );
+
+    {/* ══════════ MODAL DE PAGO ══════════ */}
+    {showPaymentModal && (
+      <PaymentModal
+        method={paymentMethod}
+        total={displayTotal}
+        currency={displayCurrency}
+        onConfirm={handleFinalConfirm}
+        onCancel={() => setShowPaymentModal(false)}
+        loading={loading}
+      />
+    )}
+  </>;
 };
 
 export default Checkout;

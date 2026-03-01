@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { useCart } from "./CartContext"; 
+// src/context/CurrencyContext.tsx
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { useCart } from "./CartContext";
+import CurrencyConfirmModal from "../components/ui/CurrencyConfirmModal";
 
 type Currency = "PEN" | "USD" | "EUR";
 
@@ -10,40 +12,91 @@ interface CurrencyContextType {
   convertVbucks: (vbucks: number) => number;
 }
 
-const RATES = { PEN: 0.015, USD: 0.0045, EUR: 0.004 }; 
-const SYMBOLS = { PEN: "S/", USD: "$", EUR: "€" };
+// Tasas respecto a PEN (base)
+const RATES: Record<Currency, number> = { PEN: 0.015, USD: 0.0045, EUR: 0.004 };
+
+// Tasas PEN → moneda para recalcular precios del carrito
+const PEN_TO: Record<Currency, number> = { PEN: 1, USD: 0.27, EUR: 0.25 };
+
+const SYMBOLS: Record<Currency, string> = { PEN: "S/", USD: "$", EUR: "€" };
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrency] = useState<Currency>("PEN")
-  const { clearCart } = useCart() // Ahora funcionará correctamente
+  const [currency,    setCurrencyState] = useState<Currency>("PEN");
+  const [modalOpen,   setModalOpen]     = useState(false);
+  const [pendingCurr, setPendingCurr]   = useState<Currency | null>(null);
 
-  const handleCurrencyChange = (newCurrency: Currency) => {
-    if (newCurrency === currency) return
+  const { cartItems, addToCart, clearCart } = useCart();
 
-    const confirmed = window.confirm(
-      `¿Cambiar a ${newCurrency}? Se vaciará el carrito para actualizar los precios.`
-    )
+  // Solicita cambio — abre modal
+  const setCurrency = useCallback((newCurrency: Currency) => {
+    if (newCurrency === currency) return;
+    setPendingCurr(newCurrency);
+    setModalOpen(true);
+  }, [currency]);
 
-    if (confirmed) {
-      setCurrency(newCurrency)
-      clearCart() // Evita que un precio de 100 PEN se convierta en 100 USD
+  // Confirma cambio: reconvierte precios del carrito sin vaciarlo
+  const handleConfirm = useCallback(() => {
+    if (!pendingCurr) return;
+
+    const from = currency;
+    const to   = pendingCurr;
+
+    if (cartItems.length > 0) {
+      // Cada precio está almacenado en `from`. Lo reconvertimos a `to`:
+      // precio_PEN = precio_from / PEN_TO[from]
+      // precio_to  = precio_PEN * PEN_TO[to]
+      const rateFrom = PEN_TO[from];
+      const rateTo   = PEN_TO[to];
+
+      // Recrear el carrito con precios actualizados
+      const snapshot = cartItems.map(item => ({ ...item }));
+      clearCart();
+
+      // Pequeño timeout para que el clear se procese antes de re-agregar
+      setTimeout(() => {
+        snapshot.forEach(item => {
+          const pricePEN = item.price / rateFrom;
+          const newPrice = parseFloat((pricePEN * rateTo).toFixed(2));
+          // addToCart suma 1, así que lo agregamos quantity veces
+          for (let i = 0; i < item.quantity; i++) {
+            addToCart({ ...item, price: newPrice });
+          }
+        });
+      }, 0);
     }
-  }
 
-  const convertVbucks = (vbucks: number) => vbucks * RATES[currency]
+    setCurrencyState(to);
+    setModalOpen(false);
+    setPendingCurr(null);
+  }, [currency, pendingCurr, cartItems, clearCart, addToCart]);
+
+  const handleCancel = useCallback(() => {
+    setModalOpen(false);
+    setPendingCurr(null);
+  }, []);
+
+  const convertVbucks = (vbucks: number) => vbucks * RATES[currency];
 
   const formatPrice = (vbucks: number) => {
-    const total = convertVbucks(vbucks)
-    return `${SYMBOLS[currency]} ${total.toFixed(2)}`
-  }
+    const total = convertVbucks(vbucks);
+    return `${SYMBOLS[currency]} ${total.toFixed(2)}`;
+  };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency: handleCurrencyChange, formatPrice, convertVbucks }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, formatPrice, convertVbucks }}>
       {children}
+
+      <CurrencyConfirmModal
+        open={modalOpen}
+        fromCurrency={currency}
+        toCurrency={pendingCurr ?? currency}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </CurrencyContext.Provider>
-  )
+  );
 };
 
 export const useCurrency = () => {

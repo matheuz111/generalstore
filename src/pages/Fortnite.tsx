@@ -31,10 +31,20 @@ function useShopResetCountdown() {
   return timeLeft;
 }
 
-/* ── Header estilo Fortnite con fecha y countdown ── */
+/* ── Header estilo Fortnite con fecha, countdown y código de creador ── */
 const FortniteShopHeader = () => {
-  const countdown = useShopResetCountdown();
-  const { lang }  = useLang();
+  const countdown          = useShopResetCountdown();
+  const { lang }           = useLang();
+  const [copied, setCopied] = useState(false);
+
+  const CREATOR_CODE = "Kidme";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(CREATOR_CODE).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const now = new Date();
   const dateStr = now.toLocaleDateString(lang === "EN" ? "en-US" : "es-ES", {
@@ -45,7 +55,56 @@ const FortniteShopHeader = () => {
   }).toUpperCase();
 
   return (
-    <div className="text-center py-4 pb-10">
+    <div className="text-center py-4 pb-8">
+
+      {/* Código de creador */}
+      <div className="flex items-center justify-center gap-3 mb-5">
+        <div className="flex items-center gap-2 bg-white/5 border border-white/15 rounded-2xl px-5 py-2.5">
+          <span
+            className="text-white/50 uppercase text-xs tracking-widest font-black"
+            style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+          >
+            {lang === "EN" ? "Creator Code:" : "Código de creador:"}
+          </span>
+          <span
+            className="text-white text-lg md:text-xl font-black uppercase italic tracking-wide"
+            style={{
+              fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
+              textShadow: "0 0 20px rgba(0,150,255,0.5)",
+            }}
+          >
+            {CREATOR_CODE}
+          </span>
+          <button
+            onClick={handleCopy}
+            title="Copiar código"
+            className={`ml-1 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wide transition-all duration-200 cursor-pointer active:scale-95 ${
+              copied
+                ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                : "bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/30"
+            }`}
+            style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+          >
+            {copied ? (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {lang === "EN" ? "Copied!" : "¡Copiado!"}
+              </>
+            ) : (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+                {lang === "EN" ? "Copy" : "Copiar"}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
       <h1
         className="text-3xl md:text-5xl font-black uppercase italic text-white drop-shadow-lg"
         style={{
@@ -349,10 +408,11 @@ const FilterDrawer = ({
 
 /* ── Main Page ── */
 const Fortnite = () => {
-  const [sections, setSections] = useState<any[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<string>("");
+  const [sections,  setSections]  = useState<any[]>([]);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState<string | null>(null);
+  const [activeId,  setActiveId]  = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { formatPrice, convertVbucks } = useCurrency();
   const { addToCart }                  = useCart();
@@ -427,50 +487,147 @@ const Fortnite = () => {
   return (
     <CategoryShell title="" subtitle="">
 
-      {/* ── Header con fecha y countdown ── */}
+      {/* ── Header con código de creador, fecha y countdown ── */}
       <FortniteShopHeader />
+
+      {/* ── Aviso: Tienda de Fortnite ── */}
+      <div className="flex items-start gap-3 bg-[#0d1a2e] border border-blue-500/25 rounded-2xl px-5 py-4 mb-6 max-w-2xl mx-auto">
+        <div className="shrink-0 w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/20 flex items-center justify-center mt-0.5">
+          <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <circle cx="12" cy="12" r="10"/>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01"/>
+          </svg>
+        </div>
+        <div>
+          <p className="text-blue-400 font-black text-xs uppercase tracking-widest mb-1.5">
+            🎮 Tienda de Fortnite
+          </p>
+          <p className="text-white/65 text-sm leading-relaxed">
+            Agrega nuestras cuentas como{" "}
+            <span className="text-white font-bold">amigos</span>
+            {" "}y espera{" "}
+            <span className="text-blue-400 font-bold">48 horas</span>
+            {" "}si es tu primera compra. Te contactaremos por{" "}
+            <span className="text-blue-300 font-bold">WhatsApp, Instagram, Facebook o Discord</span>
+            {" "}para coordinar la entrega.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Buscador de ítems ── */}
+      <div className="relative max-w-xl mx-auto mb-10">
+        <svg
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 pointer-events-none"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <circle cx="11" cy="11" r="8"/>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Buscar ítem en la tienda..."
+          className="w-full bg-white/5 border border-white/15 focus:border-blue-500/60 rounded-2xl pl-12 pr-10 py-3.5 text-white placeholder-white/30 font-bold text-sm focus:outline-none transition"
+          style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
 
       {/* ── Filter lateral sin overlay ── */}
       <FilterDrawer sections={sections} activeId={activeId} onSelect={handleSelect} />
 
       <div className="space-y-12">
-        {sections.map((section) => {
-          const sectionOutDate = section.items[0]?.outDate;
-          return (
-            <div
-              key={section.id}
-              id={section.id}
-              ref={(el) => { sectionRefs.current[section.id] = el; }}
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <h2
-                  className="text-3xl md:text-4xl font-black uppercase italic text-white tracking-wide drop-shadow-lg"
-                  style={{
-                    fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
-                    WebkitTextStroke: "1px rgba(0,180,255,0.6)",
-                    textShadow: "0 0 20px rgba(0,150,255,0.4), 2px 2px 0px rgba(0,0,0,0.8)",
-                  }}
-                >
-                  {section.titleEs}
-                </h2>
-                {sectionOutDate && <SectionCountdown outDate={sectionOutDate} />}
-              </div>
+        {(() => {
+          const query = searchQuery.trim().toLowerCase();
 
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {section.items.map((item: any) => (
-                  <ShopCard
-                    key={item.offerId}
-                    item={item}
-                    formatPrice={formatPrice}
-                    convertVbucks={convertVbucks}
-                    addToCart={addToCart}
-                    t={t}
-                  />
-                ))}
+          /* Si hay búsqueda → mostrar resultados planos sin secciones */
+          if (query) {
+            const results = sections.flatMap((s) =>
+              s.items.filter((item: any) =>
+                item.name?.toLowerCase().includes(query)
+              )
+            );
+            if (results.length === 0) return (
+              <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+                <span className="text-5xl">🔍</span>
+                <p
+                  className="text-white/50 font-black uppercase text-lg"
+                  style={{ fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif" }}
+                >
+                  No se encontraron ítems para "{searchQuery}"
+                </p>
               </div>
-            </div>
-          );
-        })}
+            );
+            return (
+              <div>
+                <p className="text-white/40 text-sm font-bold mb-4 uppercase tracking-widest pl-1">
+                  {results.length} resultado{results.length !== 1 ? "s" : ""} para "{searchQuery}"
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {results.map((item: any) => (
+                    <ShopCard
+                      key={item.offerId}
+                      item={item}
+                      formatPrice={formatPrice}
+                      convertVbucks={convertVbucks}
+                      addToCart={addToCart}
+                      t={t}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          /* Vista normal por secciones */
+          return sections.map((section) => {
+            const sectionOutDate = section.items[0]?.outDate;
+            return (
+              <div
+                key={section.id}
+                id={section.id}
+                ref={(el) => { sectionRefs.current[section.id] = el; }}
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <h2
+                    className="text-3xl md:text-4xl font-black uppercase italic text-white tracking-wide drop-shadow-lg"
+                    style={{
+                      fontFamily: "'BurbankBig','Arial Black','Impact',sans-serif",
+                      WebkitTextStroke: "1px rgba(0,180,255,0.6)",
+                      textShadow: "0 0 20px rgba(0,150,255,0.4), 2px 2px 0px rgba(0,0,0,0.8)",
+                    }}
+                  >
+                    {section.titleEs}
+                  </h2>
+                  {sectionOutDate && <SectionCountdown outDate={sectionOutDate} />}
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {section.items.map((item: any) => (
+                    <ShopCard
+                      key={item.offerId}
+                      item={item}
+                      formatPrice={formatPrice}
+                      convertVbucks={convertVbucks}
+                      addToCart={addToCart}
+                      t={t}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          });
+        })()}
       </div>
     </CategoryShell>
   );

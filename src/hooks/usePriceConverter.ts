@@ -1,7 +1,3 @@
-// src/hooks/usePriceConverter.ts
-// Los precios base de todos los productos están en PEN (soles).
-// Este hook convierte al tipo de cambio de la moneda activa.
-
 import { useCurrency } from "../context/CurrencyContext";
 
 // Tipos de cambio respecto al PEN
