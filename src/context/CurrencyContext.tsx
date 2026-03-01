@@ -36,7 +36,6 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     setModalOpen(true);
   }, [currency]);
 
-  // Confirma cambio: reconvierte precios del carrito sin vaciarlo
   const handleConfirm = useCallback(() => {
     if (!pendingCurr) return;
 
@@ -44,17 +43,11 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     const to   = pendingCurr;
 
     if (cartItems.length > 0) {
-      // Cada precio está almacenado en `from`. Lo reconvertimos a `to`:
-      // precio_PEN = precio_from / PEN_TO[from]
-      // precio_to  = precio_PEN * PEN_TO[to]
       const rateFrom = PEN_TO[from];
       const rateTo   = PEN_TO[to];
 
-      // Recrear el carrito con precios actualizados
       const snapshot = cartItems.map(item => ({ ...item }));
       clearCart();
-
-      // Pequeño timeout para que el clear se procese antes de re-agregar
       setTimeout(() => {
         snapshot.forEach(item => {
           const pricePEN = item.price / rateFrom;
