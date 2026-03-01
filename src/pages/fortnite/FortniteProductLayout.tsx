@@ -147,14 +147,83 @@ const TryNotice = () => {
               </span>
             </li>
           </ul>
-          <p className="text-amber-200/60 text-sm flex items-start gap-2 pt-1 border-t border-amber-500/20">
-            <span className="shrink-0">💬</span>
-            <span>
-              Te contactaremos por{" "}
-              <strong className="text-amber-300">WhatsApp, Instagram, Facebook o Discord</strong>
-              {" "}para coordinar la entrega.
-            </span>
-          </p>
+
+        </div>
+
+      </div>
+    </>
+  );
+};
+
+/* ─── Aviso Pase de Batalla (48h) ─── */
+const BPNotice = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setShowModal(false)}
+        >
+          <div className="relative max-w-2xl w-full mx-4" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute -top-3 -right-3 z-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+            <div className="rounded-2xl overflow-hidden border border-yellow-500/30 bg-black">
+              <img src="/images/ejemplo-pase.jpg" alt="Ejemplo restricción cuenta" className="w-full object-contain max-h-[80vh]" />
+            </div>
+            <p className="text-center text-yellow-300/60 text-xs mt-2">Ejemplo de error o restricción en cuenta</p>
+          </div>
+        </div>
+      )}
+
+      <div className="w-full bg-yellow-500/10 border border-yellow-500/40 rounded-xl p-5 text-left relative">
+
+        {/* Botón esquina superior derecha */}
+        <button
+          onClick={() => setShowModal(true)}
+          className="absolute top-3 right-3 flex items-center gap-1.5 bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-400/40 text-yellow-300 text-[11px] font-bold uppercase px-2.5 py-1 rounded-lg transition active:scale-95 cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Ver ejemplo
+        </button>
+
+        {/* Texto del aviso */}
+        <div className="space-y-3 pr-36">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">⚠️</span>
+            <p
+              className="font-black text-yellow-300 uppercase tracking-wide text-sm"
+              style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
+            >
+              Importante antes de comprar
+            </p>
+          </div>
+          <ul className="space-y-2 text-sm text-yellow-200/80">
+            <li className="flex items-start gap-2">
+              <span className="text-yellow-400 mt-0.5 shrink-0">•</span>
+              <span>
+                Para enviar cualquier Pase es necesario que seamos{" "}
+                <strong className="text-yellow-300">amigos durante al menos 48 horas</strong>.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-yellow-400 mt-0.5 shrink-0">•</span>
+              <span>
+                Tu cuenta no debe tener ningún{" "}
+                <strong className="text-yellow-300">error o restricción</strong>{" "}
+                que impida realizar el envío.
+              </span>
+            </li>
+          </ul>
         </div>
 
       </div>
@@ -177,13 +246,13 @@ const FortniteProductLayout = ({ title, products, infoBox, variant }: Props) => 
   const { t }         = useLang();
   const { cartPrice } = usePriceConverter();
 
-  const showTRY = variant !== "pase";
+  const notice = variant === "pase" ? <BPNotice /> : <TryNotice />;
 
   return (
     <CategoryShell
       title={title}
       subtitle=""
-      notice={showTRY ? <TryNotice /> : null}
+      notice={notice}
     >
       {/* Breadcrumb */}
       <button

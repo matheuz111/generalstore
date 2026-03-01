@@ -72,7 +72,7 @@ const GAME_CONFIGS: GameConfig[] = [
   },
   {
     key:      "marvel",
-    prefixes: ["marvel-", "mr-"],
+    prefixes: ["marvel-", "mr-", "lat-"],
     label:    "Marvel Rivals",
     emoji:    "🦸",
     color:    "text-red-400",
@@ -81,7 +81,7 @@ const GAME_CONFIGS: GameConfig[] = [
   },
   {
     key:      "wildrift",
-    prefixes: ["wc-", "lat-"],
+    prefixes: ["wc-"],
     label:    "Wild Rift / LoL",
     emoji:    "⚔️",
     color:    "text-cyan-400",
@@ -185,7 +185,8 @@ const FortniteDeliveryInfo = ({
   hasWhatsappFn: boolean;
   hasBP: boolean;
 }) => {
-  const showGifts = hasFnShop;
+  const [showGiftImg, setShowGiftImg] = useState(false);
+  const showGifts    = hasFnShop;
   const showRecharge = hasWhatsappFn || hasBP;
 
   if (!showGifts && !showRecharge) return null;
@@ -203,7 +204,7 @@ const FortniteDeliveryInfo = ({
 
       {/* Regalos de tienda */}
       {showGifts && (
-        <div className="bg-black/20 rounded-xl p-4 space-y-1.5">
+        <div className="bg-black/20 rounded-xl p-4 space-y-2 relative">
           <p className="text-sm font-bold text-white flex items-center gap-2">
             🎁 Regalos de Fortnite
           </p>
@@ -212,6 +213,51 @@ const FortniteDeliveryInfo = ({
             <span className="text-blue-400 font-bold">48 horas</span>{" "}
             si es tu primera compra.
           </p>
+
+          {/* Aviso de 48h + restricciones */}
+          <div className="mt-2 border border-yellow-500/30 bg-yellow-500/5 rounded-xl p-3 relative">
+            {/* Botón ver ejemplo */}
+            <button
+              onClick={() => setShowGiftImg(v => !v)}
+              className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/10 hover:bg-white/20 border border-white/15 text-white/60 hover:text-white text-[10px] font-bold uppercase px-2 py-1 rounded-lg transition active:scale-95 cursor-pointer"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              {showGiftImg ? "Ocultar" : "IMG"}
+            </button>
+
+            <p className="text-xs text-yellow-200/80 leading-relaxed pr-16">
+              ⚠️ Para enviar cualquier Pase es necesario que seamos{" "}
+              <strong className="text-yellow-300">amigos durante al menos 48 horas</strong>.
+              Además, tu cuenta no debe tener ningún{" "}
+              <strong className="text-yellow-300">error o restricción</strong>{" "}
+              que impida realizar el envío.
+            </p>
+
+            {/* Modal imagen */}
+            {showGiftImg && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+                onClick={() => setShowGiftImg(false)}
+              >
+                <div className="relative max-w-2xl w-full mx-4" onClick={e => e.stopPropagation()}>
+                  <button
+                    onClick={() => setShowGiftImg(false)}
+                    className="absolute -top-3 -right-3 z-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                  <div className="rounded-2xl overflow-hidden border border-yellow-500/30 bg-black">
+                    <img src="/images/ejemplo.jpg" alt="Ejemplo restricción cuenta" className="w-full object-contain max-h-[80vh]" />
+                  </div>
+                  <p className="text-center text-yellow-300/60 text-xs mt-2">Ejemplo de error o restricción en cuenta</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

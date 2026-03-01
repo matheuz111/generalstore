@@ -21,9 +21,20 @@ interface Props {
   currency?: string;
 }
 
-const PaymentMethods = ({ selected, onSelect }: Props) => (
+// Qué métodos mostrar según la divisa activa
+const METHODS_BY_CURRENCY: Record<string, string[]> = {
+  PEN: ["yape", "plin", "bcp"],
+  USD: ["binance"],
+  EUR: ["bizum"],
+};
+
+const PaymentMethods = ({ selected, onSelect, currency = "PEN" }: Props) => {
+  const allowed = METHODS_BY_CURRENCY[currency] ?? METHODS_BY_CURRENCY["PEN"];
+  const methods = ALL_METHODS.filter(m => allowed.includes(m.id));
+
+  return (
   <div className="grid grid-cols-2 gap-3">
-    {ALL_METHODS.map((m) => (
+    {methods.map((m) => (
       <button
         key={m.id}
         type="button"
@@ -39,6 +50,7 @@ const PaymentMethods = ({ selected, onSelect }: Props) => (
       </button>
     ))}
   </div>
-);
+  );
+};
 
 export default PaymentMethods;

@@ -37,7 +37,7 @@ const CategoryShell = ({ title, subtitle, notice, children }: CategoryShellProps
 
             {/* ── Aviso entre título y línea azul — centrado y ancho ── */}
             {notice && (
-              <div className="mt-6 max-w-2xl mx-auto text-left">
+              <div className="mt-6 max-w-4xl mx-auto text-left">
                 {notice}
               </div>
             )}
