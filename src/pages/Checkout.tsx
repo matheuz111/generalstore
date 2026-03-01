@@ -467,8 +467,12 @@ const Checkout = () => {
     const errors: Record<string, boolean> = {};
 
     if (!name.trim())   errors.name  = true;
-    if (!email.trim())  errors.email = true;
-    if (!phone.trim())  errors.phone = true;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email.trim())) errors.email = true;
+
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 9) errors.phone = true;
     if (!paymentMethod) errors.payment = true;
 
     if (hasFnShop && !epicUser.trim())       errors.epicUser     = true;
@@ -637,14 +641,27 @@ const Checkout = () => {
           <RequiredLabel>Correo electrónico</RequiredLabel>
           <Field value={email} onChange={(v) => { setEmail(v); clearError("email"); }}
             placeholder={t("checkout", "email")} type="email" hasError={!!fieldErrors.email} />
-          <FieldError msg={fieldErrors.email ? "El correo es obligatorio." : undefined} />
+          <FieldError msg={fieldErrors.email ? "Ingresa un correo válido (ejemplo@correo.com)." : undefined} />
         </div>
 
         <div className="space-y-1">
           <RequiredLabel>Número de teléfono</RequiredLabel>
-          <Field value={phone} onChange={(v) => { setPhone(v); clearError("phone"); }}
-            placeholder="Ej: 987 654 321" type="tel" hasError={!!fieldErrors.phone} />
-          <FieldError msg={fieldErrors.phone ? "El teléfono es obligatorio." : undefined} />
+          <Field
+            value={phone}
+            onChange={(v) => {
+              // Solo permitir dígitos, max 9
+              const digits = v.replace(/\D/g, "").slice(0, 9);
+              setPhone(digits);
+              clearError("phone");
+            }}
+            placeholder="Ej: 987654321"
+            type="tel"
+            hasError={!!fieldErrors.phone}
+          />
+          <FieldError msg={fieldErrors.phone ? "Ingresa un número válido de 9 dígitos." : undefined} />
+          {phone.length > 0 && phone.replace(/\D/g, "").length < 9 && (
+            <p className="text-xs text-white/30 pl-1">{phone.replace(/\D/g, "").length}/9 dígitos</p>
+          )}
         </div>
 
         {/* ══ INFORMACIÓN DE ENTREGA FORTNITE ══ */}
