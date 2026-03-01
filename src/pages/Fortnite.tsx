@@ -499,9 +499,6 @@ const Fortnite = () => {
           </svg>
         </div>
         <div>
-          <p className="text-blue-400 font-black text-xs uppercase tracking-widest mb-1.5">
-            🎮 Tienda de Fortnite
-          </p>
           <p className="text-white/65 text-sm leading-relaxed">
             Agrega nuestras cuentas como{" "}
             <span className="text-white font-bold">amigos</span>

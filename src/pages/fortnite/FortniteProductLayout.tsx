@@ -1,4 +1,5 @@
 // src/pages/fortnite/FortniteProductLayout.tsx
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoryShell from "../../components/layout/CategoryShell";
@@ -42,7 +43,7 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
         </div>
       </div>
 
-      <h3 className="font-bold text-sm md:text-base leading-tight min-h-[40px] mb-2 text-white">
+      <h3 className="font-bold text-sm md:text-base leading-tight min-h-[40px] mb-2 text-white whitespace-pre-line">
         {product.name}
       </h3>
 
@@ -65,29 +66,101 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
   );
 };
 
-/* ─── Aviso Lira Turca (TRY) ─── */
-const TryNotice = () => (
-  <div className="bg-amber-500/10 border border-amber-500/40 rounded-xl p-4 flex gap-3 text-left">
-    <span className="text-2xl shrink-0">🇹🇷</span>
-    <div className="text-sm leading-relaxed">
-      <p
-        className="font-black text-amber-300 uppercase tracking-wide mb-1"
-        style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
+/* ─── Modal de imagen ejemplo ─── */
+const ImageModal = ({ onClose }: { onClose: () => void }) => (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    onClick={onClose}
+  >
+    <div
+      className="relative max-w-2xl w-full mx-4"
+      onClick={e => e.stopPropagation()}
+    >
+      {/* Botón cerrar */}
+      <button
+        onClick={onClose}
+        className="absolute -top-3 -right-3 z-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full w-8 h-8 flex items-center justify-center transition cursor-pointer"
       >
-        Precios en Lira Turca (TRY)
-      </p>
-      <p className="text-amber-200/80">
-        Exclusivos para cuentas con región en <strong>Turquía (TRY)</strong>.
-      </p>
-      <p className="text-amber-200/60 mt-1.5 flex items-start gap-1.5">
-        <span className="mt-0.5 shrink-0">💬</span>
-        Te contactaremos por{" "}
-        <strong className="text-amber-300 ml-1">WhatsApp, Instagram, Facebook o Discord</strong>
-        {" "}para coordinar la entrega.
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div className="rounded-2xl overflow-hidden border border-amber-500/30 bg-black">
+        <img
+          src="/images/ejemplo.jpg"
+          alt="Ejemplo región TRY"
+          className="w-full object-contain max-h-[80vh]"
+        />
+      </div>
+      <p className="text-center text-amber-300/60 text-xs mt-2">
+        Ejemplo de cuenta con región Turquía (TRY)
       </p>
     </div>
   </div>
 );
+
+/* ─── Aviso Lira Turca (TRY) ─── */
+const TryNotice = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+      {showModal && <ImageModal onClose={() => setShowModal(false)} />}
+
+      <div className="w-full bg-amber-500/10 border border-amber-500/40 rounded-xl p-5 text-left relative">
+
+        {/* Botón esquina superior derecha */}
+        <button
+          onClick={() => setShowModal(true)}
+          className="absolute top-3 right-3 flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/40 border border-amber-400/40 text-amber-300 text-[11px] font-bold uppercase px-2.5 py-1 rounded-lg transition active:scale-95 cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          Ver ejemplo
+        </button>
+
+        {/* Texto del aviso */}
+        <div className="space-y-3 pr-36">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🇹🇷</span>
+            <p
+              className="font-black text-amber-300 uppercase tracking-wide text-sm"
+              style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
+            >
+              Precios en Lira Turca (TRY)
+            </p>
+          </div>
+          <ul className="space-y-2 text-sm text-amber-200/80">
+            <li className="flex items-start gap-2">
+              <span className="text-amber-400 mt-0.5 shrink-0">•</span>
+              <span>
+                Estos precios son exclusivos para cuentas con región configurada en{" "}
+                <strong className="text-amber-300">Turquía (TRY – Lira Turca)</strong>.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-amber-400 mt-0.5 shrink-0">•</span>
+              <span>
+                Si tu cuenta no muestra los precios en TRY, no podrás acceder a estos valores.
+              </span>
+            </li>
+          </ul>
+          <p className="text-amber-200/60 text-sm flex items-start gap-2 pt-1 border-t border-amber-500/20">
+            <span className="shrink-0">💬</span>
+            <span>
+              Te contactaremos por{" "}
+              <strong className="text-amber-300">WhatsApp, Instagram, Facebook o Discord</strong>
+              {" "}para coordinar la entrega.
+            </span>
+          </p>
+        </div>
+
+      </div>
+    </>
+  );
+};
 
 /* ─── Layout principal ─── */
 interface Props {
@@ -95,7 +168,7 @@ interface Props {
   info:     string;
   products: FnProduct[];
   infoBox?: ReactNode;
-  variant?: "pavos" | "packs";
+  variant?: "pavos" | "packs" | "pase";
 }
 
 const FortniteProductLayout = ({ title, products, infoBox, variant }: Props) => {
@@ -104,11 +177,13 @@ const FortniteProductLayout = ({ title, products, infoBox, variant }: Props) => 
   const { t }         = useLang();
   const { cartPrice } = usePriceConverter();
 
+  const showTRY = variant !== "pase";
+
   return (
     <CategoryShell
       title={title}
       subtitle=""
-      notice={<TryNotice />}
+      notice={showTRY ? <TryNotice /> : null}
     >
       {/* Breadcrumb */}
       <button

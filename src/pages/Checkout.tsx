@@ -20,8 +20,8 @@ interface GameConfig {
   label:    string;
   emoji:    string;
   color:    string;
-  uidLabel: string | null;   // null = sin campo UID
-  servers:  string[] | null; // null = sin selección de servidor
+  uidLabel: string | null;
+  servers:  string[] | null;
 }
 
 const GAME_CONFIGS: GameConfig[] = [
@@ -102,15 +102,16 @@ const GAME_CONFIGS: GameConfig[] = [
 /* ── Prefijos de otros productos ── */
 const PAVOS_PREFIXES             = ["fn-pavos-", "pavos-", "fn-recharge-"];
 const PACKS_PREFIXES             = ["fn-pack-",  "pack-",  "fn-bundle-"];
+const BP_PREFIXES                = ["club-", "battle-pass", "og-pass", "music-pass", "lego-pass"];
 const WHATSAPP_FORTNITE_PREFIXES = [...PAVOS_PREFIXES, ...PACKS_PREFIXES];
 const ROBLOX_PREFIXES            = ["rbx-"];
 const GAMEPASS_PREFIXES          = ["gp-"];
 const DISCORD_PREFIXES           = ["discord-"];
 
-/* Todos los prefijos conocidos — para detectar Fortnite shop por exclusión */
 const ALL_KNOWN_PREFIXES = [
   ...GAME_CONFIGS.flatMap((g) => g.prefixes),
   ...WHATSAPP_FORTNITE_PREFIXES,
+  ...BP_PREFIXES,
   ...ROBLOX_PREFIXES,
   ...GAMEPASS_PREFIXES,
   ...DISCORD_PREFIXES,
@@ -173,6 +174,65 @@ const ServerSelect = ({
 );
 
 /* ════════════════════════════════════════════
+   BLOQUE: INFORMACIÓN DE ENTREGA FORTNITE
+════════════════════════════════════════════ */
+const FortniteDeliveryInfo = ({
+  hasFnShop,
+  hasWhatsappFn,
+  hasBP,
+}: {
+  hasFnShop: boolean;
+  hasWhatsappFn: boolean;
+  hasBP: boolean;
+}) => {
+  const showGifts = hasFnShop;
+  const showRecharge = hasWhatsappFn || hasBP;
+
+  if (!showGifts && !showRecharge) return null;
+
+  return (
+    <div className="border border-blue-500/20 bg-blue-500/5 rounded-xl p-4 space-y-4">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <span className="text-lg">🎮</span>
+        <p className="text-xs font-black uppercase tracking-widest text-blue-400"
+          style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}>
+          Información de entrega — Fortnite
+        </p>
+      </div>
+
+      {/* Regalos de tienda */}
+      {showGifts && (
+        <div className="bg-black/20 rounded-xl p-4 space-y-1.5">
+          <p className="text-sm font-bold text-white flex items-center gap-2">
+            🎁 Regalos de Fortnite
+          </p>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            Agrega nuestras cuentas como amigos y espera{" "}
+            <span className="text-blue-400 font-bold">48 horas</span>{" "}
+            si es tu primera compra.
+          </p>
+        </div>
+      )}
+
+      {/* Recarga de Club, Pavos y Packs */}
+      {showRecharge && (
+        <div className="bg-black/20 rounded-xl p-4 space-y-1.5">
+          <p className="text-sm font-bold text-white flex items-center gap-2">
+            🔑 Recarga de Club, Pavos y Packs
+          </p>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            Se requieren los{" "}
+            <span className="text-white font-semibold">datos de la cuenta</span>
+            {" "}(correo y contraseña) para completar la recarga.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ════════════════════════════════════════════
    MODAL DE PAGO
 ════════════════════════════════════════════ */
 const CopyRow = ({ label, value }: { label: string; value: string }) => {
@@ -207,7 +267,6 @@ const CopyRow = ({ label, value }: { label: string; value: string }) => {
   );
 };
 
-/* ── Datos por método — EDITA AQUÍ TUS DATOS REALES ── */
 const PAYMENT_DATA: Record<string, {
   title: string; color: string; qr: string;
   rows: { label: string; value: string }[]; note?: string;
@@ -237,10 +296,10 @@ const PAYMENT_DATA: Record<string, {
     color: "#003DA5",
     qr:    "",
     rows:  [
-      { label: "BCP",      value: "19206197697098" },
+      { label: "BCP",       value: "19206197697098" },
       { label: "Interbank", value: "8983302393569" },
-      { label: "BBVA",     value: "001108140213226768" },
-      { label: "Titular",  value: "Freddy Aystin Rodriguez Uricay" },
+      { label: "BBVA",      value: "001108140213226768" },
+      { label: "Titular",   value: "Freddy Aystin Rodriguez Uricay" },
     ],
     note: "Envía el comprobante con el N° de operación por WhatsApp o Instagram.",
   },
@@ -273,7 +332,6 @@ const PaymentModal = ({ method, total, currency, onConfirm, onCancel, loading }:
     >
       <div className="w-full max-w-md bg-[#0b1022] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
 
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4"
           style={{ borderBottom: `1px solid ${data.color}33`, background: `${data.color}12` }}>
           <h3 className="font-black uppercase text-lg tracking-wide" style={{ color: data.color, fontFamily: "'BurbankBig','Arial Black',sans-serif" }}>
@@ -287,8 +345,6 @@ const PaymentModal = ({ method, total, currency, onConfirm, onCancel, loading }:
         </div>
 
         <div className="px-6 py-5 space-y-4 max-h-[75vh] overflow-y-auto">
-
-          {/* QR */}
           {data.qr && (
             <div className="flex justify-center">
               <div className="bg-white p-3 rounded-2xl" style={{ boxShadow: `0 0 30px ${data.color}40` }}>
@@ -304,7 +360,6 @@ const PaymentModal = ({ method, total, currency, onConfirm, onCancel, loading }:
             </div>
           )}
 
-          {/* Monto */}
           <div className="flex items-center justify-between rounded-xl px-4 py-3 border"
             style={{ background: `${data.color}10`, borderColor: `${data.color}30` }}>
             <span className="text-white/60 text-sm font-bold">Monto a pagar:</span>
@@ -313,17 +368,14 @@ const PaymentModal = ({ method, total, currency, onConfirm, onCancel, loading }:
             </span>
           </div>
 
-          {/* Filas copiables */}
           <div className="space-y-2">
             {data.rows.map((row) => <CopyRow key={row.label} label={row.label} value={row.value} />)}
           </div>
 
-          {/* Nota */}
           {data.note && (
             <p className="text-white/40 text-xs text-center leading-relaxed">{data.note}</p>
           )}
 
-          {/* Botones */}
           <div className="flex flex-col gap-3 pt-2">
             <button
               onClick={onConfirm} disabled={loading}
@@ -358,10 +410,14 @@ const Checkout = () => {
   /* Detección de contenido */
   const hasFnShop     = cartItems.some((i) => isFortniteShopItem(i.id));
   const hasWhatsappFn = anyItem(cartItems, WHATSAPP_FORTNITE_PREFIXES);
+  const hasBP         = anyItem(cartItems, BP_PREFIXES);
   const hasRoblox     = anyItem(cartItems, ROBLOX_PREFIXES);
   const hasGamePass   = anyItem(cartItems, GAMEPASS_PREFIXES);
   const hasDiscord    = anyItem(cartItems, DISCORD_PREFIXES);
   const activeGames   = getActiveGames(cartItems);
+
+  // Hay algún ítem de Fortnite (cualquier tipo)
+  const hasAnyFortnite = hasFnShop || hasWhatsappFn || hasBP;
 
   /* Estado formulario */
   const [name,          setName]          = useState(user?.username || "");
@@ -375,7 +431,7 @@ const Checkout = () => {
   const [fieldErrors,   setFieldErrors]   = useState<Record<string, boolean>>({});
   const [loading,       setLoading]       = useState(false);
   const [emailStatus,   setEmailStatus]   = useState<"idle"|"sending"|"sent"|"failed">("idle");
-  const [showPaymentModal,   setShowPaymentModal]   = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   /* Estado dinámico por juego */
   const [gameUIDs,    setGameUIDs]    = useState<Record<string, string>>({});
@@ -422,7 +478,6 @@ const Checkout = () => {
   const clearError = (key: string) =>
     setFieldErrors((prev) => ({ ...prev, [key]: false }));
 
-  /* Construir formData para email y localStorage */
   const buildFormData = (): Record<string, string> => {
     const gameData: Record<string, string> = {};
     for (const game of activeGames) {
@@ -439,7 +494,6 @@ const Checkout = () => {
     };
   };
 
-  /* Enviar email recibo */
   const sendReceiptEmail = async (orderId: number) => {
     setEmailStatus("sending");
     try {
@@ -457,13 +511,11 @@ const Checkout = () => {
     } catch { setEmailStatus("failed"); }
   };
 
-  /* Confirmar → abre modal con datos de pago */
   const handleConfirm = () => {
     if (!validate()) return;
     setShowPaymentModal(true);
   };
 
-  /* Confirmar final (desde el modal) → procesa el pedido */
   const handleFinalConfirm = async () => {
     setLoading(true);
     setShowPaymentModal(false);
@@ -477,7 +529,6 @@ const Checkout = () => {
     setTimeout(() => { clearCart(); navigate("/orden-confirmada"); }, 1200);
   };
 
-  /* Carrito vacío */
   if (cartItems.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-white">
@@ -499,7 +550,6 @@ const Checkout = () => {
         <h2 className="text-3xl font-black uppercase" style={{ fontFamily: "BurbankBig" }}>
           {t("checkout", "summary")}
         </h2>
-
 
         <div className="space-y-4">
           {cartItems.map((item) => (
@@ -586,7 +636,16 @@ const Checkout = () => {
           <FieldError msg={fieldErrors.phone ? "El teléfono es obligatorio." : undefined} />
         </div>
 
-        {/* FORTNITE SHOP */}
+        {/* ══ INFORMACIÓN DE ENTREGA FORTNITE ══ */}
+        {hasAnyFortnite && (
+          <FortniteDeliveryInfo
+            hasFnShop={hasFnShop}
+            hasWhatsappFn={hasWhatsappFn}
+            hasBP={hasBP}
+          />
+        )}
+
+        {/* FORTNITE SHOP — campo usuario Epic */}
         {hasFnShop && (
           <div className="space-y-2 border border-blue-500/20 bg-blue-500/5 rounded-xl p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-400">🎮 Fortnite</p>
@@ -599,7 +658,7 @@ const Checkout = () => {
           </div>
         )}
 
-        {/* PAVOS / PACKS */}
+        {/* PAVOS / PACKS — aviso WhatsApp */}
         {hasWhatsappFn && (
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl px-4 py-3 text-sm text-blue-300 flex items-start gap-2">
             <span className="text-lg shrink-0">💬</span>
@@ -610,7 +669,7 @@ const Checkout = () => {
           </div>
         )}
 
-        {/* JUEGOS CON UID — uno por juego detectado en el carrito */}
+        {/* JUEGOS CON UID */}
         {activeGames.map((game) => (
           <div key={game.key} className="space-y-3 border border-white/8 bg-white/[0.02] rounded-xl p-4">
             <p className={`text-xs font-bold uppercase tracking-widest ${game.color}`}>

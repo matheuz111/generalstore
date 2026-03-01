@@ -4,11 +4,16 @@ import FortniteProductLayout from "./FortniteProductLayout";
 import type { FnProduct } from "./FortniteProductLayout";
 
 const PASES: FnProduct[] = [
-  { id: "club-1m",      name: "Club de Fortnite 1 Mes",   desc: "", pricePEN: 19.90, image: "/images/fortnite/pases/club-1m.webp"      },
-  { id: "battle-pass",  name: "Battle Pass",              desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/battle-pass.webp"  },
-  { id: "og-pass",      name: "OG Pass",                  desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/og-pass.webp"      },
-  { id: "music-pass",   name: "Music Pass",               desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/music-pass.webp"   },
-  { id: "lego-pass",    name: "LEGO Pass",                desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/lego-pass.webp"    },
+  // ── Club de Fortnite (4 variantes) ──
+  { id: "club-try",    name: "Club de Fortnite 1 Mes\nRegión Turquía",      desc: "", pricePEN: 19.90, image: "/images/fortnite/pases/club-1m.webp" },
+  { id: "club-xbox-1", name: "Club de Fortnite 1 Mes\nActivación Vía Xbox", desc: "", pricePEN: 12.50, image: "/images/fortnite/pases/club-1m.webp" },
+  { id: "club-xbox-2", name: "Club de Fortnite 2 Mes\nActivación Vía Xbox", desc: "", pricePEN: 27.90, image: "/images/fortnite/pases/club-1m.webp" },
+  { id: "club-xbox-3", name: "Club de Fortnite 3 Mes\nActivación Vía Xbox", desc: "", pricePEN: 47.90, image: "/images/fortnite/pases/club-1m.webp" },
+  // ── Otros pases ──
+  { id: "battle-pass", name: "Battle Pass",  desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/battle-pass.webp" },
+  { id: "og-pass",     name: "OG Pass",      desc: "", pricePEN: 22.90, image: "/images/fortnite/pases/og-pass.webp"     },
+  { id: "music-pass",  name: "Music Pass",   desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/music-pass.webp"  },
+  { id: "lego-pass",   name: "LEGO Pass",    desc: "", pricePEN: 29.90, image: "/images/fortnite/pases/lego-pass.webp"   },
 ];
 
 const FortnitePaseBatalla = () => {
@@ -52,6 +57,7 @@ const FortnitePaseBatalla = () => {
       info=""
       products={PASES}
       infoBox={infoBox}
+      variant="pase"
     />
   );
 };
