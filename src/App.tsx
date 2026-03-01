@@ -99,7 +99,7 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           <Route path="/fortnite/pase-de-batalla" element={<FortnitePaseBatalla />} />
 
           {/* ── CATEGORÍAS ── */}
-          <Route path="/wild-rift"         element={<WildRift />} />
+          {/* ── <Route path="/wild-rift"         element={<WildRift />} />
           <Route path="/roblox"            element={<Roblox />} />
           <Route path="/marvel-rivals"     element={<Marvel />} />
           <Route path="/pokemon-go"        element={<Pokemon />} />
@@ -108,7 +108,7 @@ const AppLayout = ({ onCartClick }: { onCartClick: () => void }) => {
           <Route path="/wuthering-waves"   element={<Wuwa />} />
           <Route path="/honkai-star-rail"  element={<Honkai />} />
           <Route path="/honor-of-kings"    element={<Honor />} />
-          <Route path="/discord"           element={<Discord />} />
+          <Route path="/discord"           element={<Discord />} />  ── */}
 
           {/* ── CHECKOUT ── */}
           <Route path="/checkout"         element={<Checkout />} />

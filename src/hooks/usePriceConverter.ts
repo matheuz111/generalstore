@@ -3,8 +3,8 @@ import { useCurrency } from "../context/CurrencyContext";
 // Tipos de cambio respecto al PEN
 const PEN_TO: Record<string, number> = {
   PEN: 1,
-  USD: 0.27,   // 1 sol ≈ 0.27 USD  (ajusta según tu criterio)
-  EUR: 0.25,   // 1 sol ≈ 0.25 EUR
+  USD: 0.30,  
+  EUR: 0.25,  
 };
 
 const SYMBOLS: Record<string, string> = {

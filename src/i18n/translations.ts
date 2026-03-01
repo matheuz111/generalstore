@@ -274,6 +274,12 @@ export const translations = {
     botsCopyId:      { ES: "Copiar ID",                      EN: "Copy ID"                      },
     botsCopied:      { ES: "¡Copiado!",                      EN: "Copied!"                      },
     botsEpicId:      { ES: "Epic ID",                        EN: "Epic ID"                      },
+    
+    /* ── Nombres de Pavos ── */
+    pavos1000:  { ES: "1.000 paVos",  EN: "1,000 V-Bucks"  },
+    pavos2800:  { ES: "2.800 paVos",  EN: "2,800 V-Bucks"  },
+    pavos5000:  { ES: "5.000 paVos",  EN: "5,000 V-Bucks"  },
+    pavos13500: { ES: "13.500 paVos", EN: "13,500 V-Bucks" },
 
     /* ── Recarga de Pavos ── */
     pavosTitle:         { ES: "Recarga de paVos",                     EN: "V-Bucks Top-Up"                   },
@@ -288,6 +294,15 @@ export const translations = {
     pavosInfoDelivery:  { ES: "⚡ Entrega inmediata al iniciar sesión en tu cuenta.", EN: "⚡ Instant delivery once we log into your account." },
     pavosInfoFriends:   { ES: "👥 No necesitas agregar cuentas amigas para recarga de paVos.", EN: "👥 No need to add friend accounts for V-Bucks top-up." },
     pavosInfoSafe:      { ES: "🔒 Proceso 100% seguro. No compartimos ni almacenamos tus credenciales.", EN: "🔒 100% safe process. We never share or store your credentials." },
+
+    /* ── Nombres de Paquetes ── */
+    packFlowering: { ES: "Flowering Chaos Bundle",   EN: "Flowering Chaos Bundle"   },
+    packKoi:       { ES: "Reino Koi Bundle",         EN: "Koi Kingdom Bundle"       },
+    packDeriva:    { ES: "Deriva Infinita Bundle",   EN: "Infinite Drift Bundle"    },
+    packNoche:     { ES: "Noche de Fortnite Bundle", EN: "Fortnite Night Bundle"    },
+    packStarter:   { ES: "Starter Pack",             EN: "Starter Pack"             },
+    packLegends:   { ES: "Legends Bundle",           EN: "Legends Bundle"           },
+    packShadow:    { ES: "Shadow Bundle",            EN: "Shadow Bundle"            },
 
     /* ── Paquetes ── */
     packagesTitle:       { ES: "Paquetes de Fortnite",                EN: "Fortnite Bundles"                 },
@@ -311,6 +326,16 @@ export const translations = {
       ES: "Suscripción mensual que incluye 1.000 paVos al mes, el Pase de Batalla de la temporada actual y cosmético exclusivo del mes. Se activa mediante Xbox.",
       EN: "Monthly subscription that includes 1,000 V-Bucks per month, the current season Battle Pass and an exclusive monthly cosmetic. Activated via Xbox.",
     },
+
+    /* Nombres de Pases */
+    bpClubTry:    { ES: "Club de Fortnite 1 Mes\nRegión Turquía",      EN: "Fortnite Club 1 Month\nTurkey Region"      },
+    bpClubXbox1:  { ES: "Club de Fortnite 1 Mes\nActivación Vía Xbox", EN: "Fortnite Club 1 Month\nXbox Activation"   },
+    bpClubXbox2:  { ES: "Club de Fortnite 2 Mes\nActivación Vía Xbox", EN: "Fortnite Club 2 Months\nXbox Activation"  },
+    bpClubXbox3:  { ES: "Club de Fortnite 3 Mes\nActivación Vía Xbox", EN: "Fortnite Club 3 Months\nXbox Activation"  },
+    bpBattlePass: { ES: "Pase de Batalla",  EN: "Battle Pass"  },
+    bpOGPass:     { ES: "Pase OG",      EN: "OG Pass"      },
+    bpMusicPass:  { ES: "Pase Musical",   EN: "Music Pass"   },
+    bpLegoPass:   { ES: "Pase de LEGO",    EN: "LEGO Pass"    },
 
     /* Battle Pass */
     bpBattleTitle:      { ES: "⭐ Battle Pass",                       EN: "⭐ Battle Pass"                    },

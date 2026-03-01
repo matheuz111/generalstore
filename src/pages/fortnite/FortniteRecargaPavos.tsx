@@ -3,15 +3,15 @@ import { useLang } from "../../context/LangContext";
 import FortniteProductLayout from "./FortniteProductLayout";
 import type { FnProduct } from "./FortniteProductLayout";
 
-const PAVOS: FnProduct[] = [
-  { id: "pavos-1000",  name: "1.000 paVos",  desc: "", pricePEN: 20.90,  image: "/images/fortnite/pavos/vbucks-1000.png"  },
-  { id: "pavos-2800",  name: "2.800 paVos",  desc: "", pricePEN: 52.90,  image: "/images/fortnite/pavos/vbucks-2800.png"  },
-  { id: "pavos-5000",  name: "5.000 paVos",  desc: "", pricePEN: 76.90,  image: "/images/fortnite/pavos/vbucks-5000.png"  },
-  { id: "pavos-13500", name: "13.500 paVos", desc: "", pricePEN: 179.90, image: "/images/fortnite/pavos/vbucks-13500.png" },
-];
-
 const FortniteRecargaPavos = () => {
   const { t } = useLang();
+
+  const PAVOS: FnProduct[] = [
+    { id: "pavos-1000",  name: t("fortnite", "pavos1000"),  desc: "", pricePEN: 20.90,  image: "/images/fortnite/pavos/vbucks-1000.png"  },
+    { id: "pavos-2800",  name: t("fortnite", "pavos2800"),  desc: "", pricePEN: 52.90,  image: "/images/fortnite/pavos/vbucks-2800.png"  },
+    { id: "pavos-5000",  name: t("fortnite", "pavos5000"),  desc: "", pricePEN: 76.90,  image: "/images/fortnite/pavos/vbucks-5000.png"  },
+    { id: "pavos-13500", name: t("fortnite", "pavos13500"), desc: "", pricePEN: 179.90, image: "/images/fortnite/pavos/vbucks-13500.png" },
+  ];
 
   const infoBox = (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
@@ -42,6 +42,7 @@ const FortniteRecargaPavos = () => {
       info=""
       products={PAVOS}
       infoBox={infoBox}
+      variant="pavos"
     />
   );
 };
