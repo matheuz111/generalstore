@@ -313,6 +313,16 @@ const PAYMENT_DATA: Record<string, {
     ],
     note: "El total incluye un 1% de cargo por Binance Pay. Adjunta el comprobante.",
   },
+  bizum: {
+    title: "Pago con Bizum",
+    color: "#007AFF",
+    qr:    "/images/bizum.png",
+    rows:  [
+      { label: "Teléfono", value: "641 653 591" },
+      { label: "Titular",  value: "Angel Rodriguez" },
+    ],
+    note: "Envía el pago por Bizum e incluye el comprobante al confirmar.",
+  },
 };
 
 interface ModalProps {
@@ -443,6 +453,7 @@ const Checkout = () => {
   /* Totales */
   const baseTotal       = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const isBinance       = paymentMethod === "binance";
+  const isBizum         = paymentMethod === "bizum";
   const displayCurrency = isBinance ? "USD" : currency;
   const symbol          = SYMBOLS[displayCurrency] ?? "S/";
   const toUSD           = (n: number) => currency === "USD" ? n : n * (USD_RATES[currency] ?? 1);
@@ -744,11 +755,17 @@ const Checkout = () => {
         {/* MÉTODO DE PAGO */}
         <div className="pt-2">
           <h3 className="text-lg font-semibold mb-3">{t("checkout", "paymentMethod")}</h3>
-          <PaymentMethods selected={paymentMethod} onSelect={(m) => { setPaymentMethod(m); clearError("payment"); }} />
+          <PaymentMethods selected={paymentMethod} onSelect={(m) => { setPaymentMethod(m); clearError("payment"); }} currency={currency} />
           {isBinance && (
             <div className="mt-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl px-4 py-3 text-sm text-yellow-300 flex items-start gap-2">
               <span className="text-lg shrink-0">⚡</span>
               <span>Los pagos con <strong>Binance Pay</strong> incluyen un cargo del <strong>1%</strong>. Total en <strong>USD</strong>.</span>
+            </div>
+          )}
+          {isBizum && (
+            <div className="mt-3 bg-blue-500/10 border border-blue-500/30 rounded-xl px-4 py-3 text-sm text-blue-300 flex items-start gap-2">
+              <span className="text-lg shrink-0">💙</span>
+              <span>Pago con <strong>Bizum</strong> al <strong>641 653 591</strong> — <strong>Angel Rodriguez</strong>. Total en <strong>EUR</strong>.</span>
             </div>
           )}
           {fieldErrors.payment && <p className="text-sm text-red-400 mt-2">⚠️ {t("checkout", "selectPayment")}</p>}
