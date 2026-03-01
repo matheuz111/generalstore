@@ -19,13 +19,10 @@ export const usePriceConverter = () => {
   const symbol = SYMBOLS[currency] ?? "S/";
   const rate   = PEN_TO[currency]  ?? 1;
 
-  /** Convierte un precio base-PEN a la moneda activa */
   const convert = (basePen: number) => basePen * rate;
 
-  /** Devuelve el precio ya convertido, listo para guardar en el carrito */
   const cartPrice = (basePen: number) => parseFloat(convert(basePen).toFixed(2));
 
-  /** Devuelve una cadena formateada: "S/ 15.90", "$ 4.29", "€ 3.97" */
   const format = (basePen: number) =>
     `${symbol} ${convert(basePen).toFixed(2)}`;
 

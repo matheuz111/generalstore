@@ -275,6 +275,19 @@ export const translations = {
     botsCopied:      { ES: "¡Copiado!",                      EN: "Copied!"                      },
     botsEpicId:      { ES: "Epic ID",                        EN: "Epic ID"                      },
     
+    /* ── Recuadro TRY (Pavos / Packs) ── */
+    tryBtn:          { ES: "Ver ejemplo",                             EN: "See example"                           },
+    tryTitle:        { ES: "Precios en Lira Turca (TRY)",            EN: "Turkish Lira (TRY) Prices"             },
+    tryLine1:        { ES: "Estos precios son exclusivos para cuentas con región configurada en Turquía (TRY – Lira Turca).", EN: "These prices are exclusive to accounts with their region set to Turkey (TRY – Turkish Lira)." },
+    tryLine2:        { ES: "Si tu cuenta no muestra los precios en TRY, no podrás acceder a estos valores.",                 EN: "If your account does not show TRY prices, you will not be able to access these values."          },
+    tryImgCaption:   { ES: "Ejemplo de cuenta con región Turquía (TRY)", EN: "Example of an account with Turkey (TRY) region" },
+
+    /* ── Recuadro Pase de Batalla (48h) ── */
+    bpNoticeTitle:      { ES: "Importante antes de comprar",                                                       EN: "Important before buying"                                                                    },
+    bpNoticeLine1:      { ES: "Para enviar cualquier Pase es necesario que seamos amigos durante al menos 48 horas.", EN: "To send any Pass we need to be friends for at least 48 hours."                          },
+    bpNoticeLine2:      { ES: "Tu cuenta no debe tener ningún error o restricción que impida realizar el envío.",   EN: "Your account must not have any error or restriction that prevents the delivery."          },
+    bpNoticeImgCaption: { ES: "Ejemplo de error o restricción en cuenta",                                          EN: "Example of an account error or restriction"                                                 },
+
     /* ── Nombres de Pavos ── */
     pavos1000:  { ES: "1.000 paVos",  EN: "1,000 V-Bucks"  },
     pavos2800:  { ES: "2.800 paVos",  EN: "2,800 V-Bucks"  },
@@ -296,13 +309,12 @@ export const translations = {
     pavosInfoSafe:      { ES: "🔒 Proceso 100% seguro. No compartimos ni almacenamos tus credenciales.", EN: "🔒 100% safe process. We never share or store your credentials." },
 
     /* ── Nombres de Paquetes ── */
-    packFlowering: { ES: "Flowering Chaos Bundle",   EN: "Flowering Chaos Bundle"   },
-    packKoi:       { ES: "Reino Koi Bundle",         EN: "Koi Kingdom Bundle"       },
-    packDeriva:    { ES: "Deriva Infinita Bundle",   EN: "Infinite Drift Bundle"    },
-    packNoche:     { ES: "Noche de Fortnite Bundle", EN: "Fortnite Night Bundle"    },
-    packStarter:   { ES: "Starter Pack",             EN: "Starter Pack"             },
-    packLegends:   { ES: "Legends Bundle",           EN: "Legends Bundle"           },
-    packShadow:    { ES: "Shadow Bundle",            EN: "Shadow Bundle"            },
+    packFlowering: { ES: "Paquete de Desafíos de Siluro a Sueldo",   EN: "Bassassin Quest Pack"   },
+    packKoi:       { ES: "Paquete Reino Koi",         EN: "Koi Kingdom Pack"       },
+    packDeriva:    { ES: "Paquete Deriva Infinita",   EN: "Infinite Drift Pack"    },
+    packNoche:     { ES: "Clip al Completo de Fortnite", EN: "Full Clip Pack"    },
+    packStarter:   { ES: "Paquete de Inicio Operación Brillante",             EN: "Operation Brite Starter Pack"             },
+    packLegends:   { ES: "Paquete Surfeo Shaka",           EN: "Shaka Surfin' Pack"           },
 
     /* ── Paquetes ── */
     packagesTitle:       { ES: "Paquetes de Fortnite",                EN: "Fortnite Bundles"                 },

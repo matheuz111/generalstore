@@ -7,13 +7,12 @@ const FortnitePaquetes = () => {
   const { t } = useLang();
 
   const PAQUETES: FnProduct[] = [
-    { id: "pack-flowering", name: t("fortnite", "packFlowering"), desc: "", pricePEN: 79.00, image: "/images/fortnite/paquetes/flowering-chaos.webp"  },
-    { id: "pack-koi",       name: t("fortnite", "packKoi"),       desc: "", pricePEN: 49.00, image: "/images/fortnite/paquetes/reino-koi.webp"          },
-    { id: "pack-deriva",    name: t("fortnite", "packDeriva"),    desc: "", pricePEN: 59.00, image: "/images/fortnite/paquetes/deriva-infinita.webp"    },
-    { id: "pack-noche",     name: t("fortnite", "packNoche"),     desc: "", pricePEN: 39.00, image: "/images/fortnite/paquetes/noche-fortnite.webp"     },
-    { id: "pack-starter",   name: t("fortnite", "packStarter"),   desc: "", pricePEN: 14.99, image: "/images/fortnite/paquetes/starter-pack.webp"       },
-    { id: "pack-legends",   name: t("fortnite", "packLegends"),   desc: "", pricePEN: 65.00, image: "/images/fortnite/paquetes/legends.webp"            },
-    { id: "pack-shadow",    name: t("fortnite", "packShadow"),    desc: "", pricePEN: 45.00, image: "/images/fortnite/paquetes/shadow.webp"             },
+    { id: "pack-flowering", name: t("fortnite", "packFlowering"), desc: "", pricePEN: 20.90, image: "/images/fortnite/paquetes/bassassin-quest.png"  },
+    { id: "pack-koi",       name: t("fortnite", "packKoi"),       desc: "", pricePEN: 40.90, image: "/images/fortnite/paquetes/koi-kingdom.png"          },
+    { id: "pack-deriva",    name: t("fortnite", "packDeriva"),    desc: "", pricePEN: 40.90, image: "/images/fortnite/paquetes/infinite-drift.png"    },
+    { id: "pack-noche",     name: t("fortnite", "packNoche"),     desc: "", pricePEN: 41.90, image: "/images/fortnite/paquetes/full-clip-pack.png"     },
+    { id: "pack-starter",   name: t("fortnite", "packStarter"),   desc: "", pricePEN: 11.90, image: "/images/fortnite/paquetes/operation-brite.png"       },
+    { id: "pack-legends",   name: t("fortnite", "packLegends"),   desc: "", pricePEN: 11.50, image: "/images/fortnite/paquetes/shaka-surfin.png"            },
   ];
 
   const infoBox = (

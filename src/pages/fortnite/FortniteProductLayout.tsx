@@ -67,7 +67,9 @@ const ShopCard = ({ product, onAdd }: { product: FnProduct; onAdd: () => void })
 };
 
 /* ─── Modal de imagen ejemplo ─── */
-const ImageModal = ({ onClose }: { onClose: () => void }) => (
+const ImageModal = ({ onClose }: { onClose: () => void }) => {
+  const { t } = useLang();
+  return (
   <div
     className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
     onClick={onClose}
@@ -94,15 +96,17 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => (
         />
       </div>
       <p className="text-center text-amber-300/60 text-xs mt-2">
-        Ejemplo de cuenta con región Turquía (TRY)
+        {t("fortnite", "tryImgCaption")}
       </p>
     </div>
   </div>
-);
+  );
+};
 
 /* ─── Aviso Lira Turca (TRY) ─── */
 const TryNotice = () => {
   const [showModal, setShowModal] = useState(false);
+  const { t } = useLang();
 
   return (
     <>
@@ -118,7 +122,7 @@ const TryNotice = () => {
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          Ver ejemplo
+          {t("fortnite", "tryBtn")}
         </button>
 
         {/* Texto del aviso */}
@@ -129,22 +133,17 @@ const TryNotice = () => {
               className="font-black text-amber-300 uppercase tracking-wide text-sm"
               style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
             >
-              Precios en Lira Turca (TRY)
+              {t("fortnite", "tryTitle")}
             </p>
           </div>
           <ul className="space-y-2 text-sm text-amber-200/80">
             <li className="flex items-start gap-2">
               <span className="text-amber-400 mt-0.5 shrink-0">•</span>
-              <span>
-                Estos precios son exclusivos para cuentas con región configurada en{" "}
-                <strong className="text-amber-300">Turquía (TRY – Lira Turca)</strong>.
-              </span>
+              <span>{t("fortnite", "tryLine1")}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-400 mt-0.5 shrink-0">•</span>
-              <span>
-                Si tu cuenta no muestra los precios en TRY, no podrás acceder a estos valores.
-              </span>
+              <span>{t("fortnite", "tryLine2")}</span>
             </li>
           </ul>
 
@@ -158,6 +157,7 @@ const TryNotice = () => {
 /* ─── Aviso Pase de Batalla (48h) ─── */
 const BPNotice = () => {
   const [showModal, setShowModal] = useState(false);
+  const { t } = useLang();
 
   return (
     <>
@@ -193,7 +193,7 @@ const BPNotice = () => {
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          Ver ejemplo
+          {t("fortnite", "tryBtn")}
         </button>
 
         {/* Texto del aviso */}
@@ -204,24 +204,17 @@ const BPNotice = () => {
               className="font-black text-yellow-300 uppercase tracking-wide text-sm"
               style={{ fontFamily: "'BurbankBig','Arial Black',sans-serif" }}
             >
-              Importante antes de comprar
+              {t("fortnite", "bpNoticeTitle")}
             </p>
           </div>
           <ul className="space-y-2 text-sm text-yellow-200/80">
             <li className="flex items-start gap-2">
               <span className="text-yellow-400 mt-0.5 shrink-0">•</span>
-              <span>
-                Para enviar cualquier Pase es necesario que seamos{" "}
-                <strong className="text-yellow-300">amigos durante al menos 48 horas</strong>.
-              </span>
+              <span>{t("fortnite", "bpNoticeLine1")}</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-yellow-400 mt-0.5 shrink-0">•</span>
-              <span>
-                Tu cuenta no debe tener ningún{" "}
-                <strong className="text-yellow-300">error o restricción</strong>{" "}
-                que impida realizar el envío.
-              </span>
+              <span>{t("fortnite", "bpNoticeLine2")}</span>
             </li>
           </ul>
         </div>
