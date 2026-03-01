@@ -26,15 +26,6 @@ interface GameConfig {
 
 const GAME_CONFIGS: GameConfig[] = [
   {
-    key:      "genshin",
-    prefixes: ["gi-"],
-    label:    "Genshin Impact",
-    emoji:    "🌸",
-    color:    "text-sky-400",
-    uidLabel: "UID de Genshin Impact",
-    servers:  ["América", "Europa", "Asia", "HK/MO/TW"],
-  },
-  {
     key:      "hsr",
     prefixes: ["hsr-"],
     label:    "Honkai: Star Rail",
@@ -50,15 +41,6 @@ const GAME_CONFIGS: GameConfig[] = [
     emoji:    "⚡",
     color:    "text-yellow-400",
     uidLabel: "UID de Zenless Zone Zero",
-    servers:  ["América", "Europa", "Asia", "HK/MO/TW"],
-  },
-  {
-    key:      "wuwa",
-    prefixes: ["wuwa-"],
-    label:    "Wuthering Waves",
-    emoji:    "🌊",
-    color:    "text-teal-400",
-    uidLabel: "UID de Wuthering Waves",
     servers:  ["América", "Europa", "Asia", "HK/MO/TW"],
   },
   {
@@ -79,24 +61,6 @@ const GAME_CONFIGS: GameConfig[] = [
     uidLabel: "UID de Marvel Rivals",
     servers:  null,
   },
-  {
-    key:      "wildrift",
-    prefixes: ["wc-"],
-    label:    "Wild Rift / LoL",
-    emoji:    "⚔️",
-    color:    "text-cyan-400",
-    uidLabel: "UID de Wild Rift",
-    servers:  null,
-  },
-  {
-    key:      "pokemon",
-    prefixes: ["pk-"],
-    label:    "Pokémon",
-    emoji:    "🔴",
-    color:    "text-yellow-300",
-    uidLabel: "UID del jugador",
-    servers:  null,
-  },
 ];
 
 /* ── Prefijos de otros productos ── */
@@ -107,6 +71,7 @@ const WHATSAPP_FORTNITE_PREFIXES = [...PAVOS_PREFIXES, ...PACKS_PREFIXES];
 const ROBLOX_PREFIXES            = ["rbx-"];
 const GAMEPASS_PREFIXES          = ["gp-"];
 const DISCORD_PREFIXES           = ["discord-"];
+const NO_UID_PREFIXES            = ["gi-", "wuwa-", "wc-", "pk-", "rbx-"];
 
 const ALL_KNOWN_PREFIXES = [
   ...GAME_CONFIGS.flatMap((g) => g.prefixes),
@@ -115,6 +80,7 @@ const ALL_KNOWN_PREFIXES = [
   ...ROBLOX_PREFIXES,
   ...GAMEPASS_PREFIXES,
   ...DISCORD_PREFIXES,
+  ...NO_UID_PREFIXES,
 ];
 
 const anyItem = (items: { id: string }[], prefixes: string[]) =>
@@ -517,8 +483,8 @@ const Checkout = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim() || !emailRegex.test(email.trim())) errors.email = true;
 
-    const phoneDigits = phone.replace(/\D/g, "");
-    if (phoneDigits.length !== 9) errors.phone = true;
+    const phoneClean = phone.replace(/[^+\d]/g, "");
+    if (phoneClean.length < 7) errors.phone = true;
     if (!paymentMethod) errors.payment = true;
 
     if (hasFnShop && !epicUser.trim())       errors.epicUser     = true;
@@ -695,19 +661,16 @@ const Checkout = () => {
           <Field
             value={phone}
             onChange={(v) => {
-              // Solo permitir dígitos, max 9
-              const digits = v.replace(/\D/g, "").slice(0, 9);
-              setPhone(digits);
+              // Solo permitir + y dígitos, sin límite
+              const clean = v.replace(/[^+\d]/g, "");
+              setPhone(clean);
               clearError("phone");
             }}
-            placeholder="Ej: 987654321"
+            placeholder="Ej: +51 987654321"
             type="tel"
             hasError={!!fieldErrors.phone}
           />
-          <FieldError msg={fieldErrors.phone ? "Ingresa un número válido de 9 dígitos." : undefined} />
-          {phone.length > 0 && phone.replace(/\D/g, "").length < 9 && (
-            <p className="text-xs text-white/30 pl-1">{phone.replace(/\D/g, "").length}/9 dígitos</p>
-          )}
+          <FieldError msg={fieldErrors.phone ? "Ingresa un número de teléfono válido." : undefined} />
         </div>
 
         {/* ══ INFORMACIÓN DE ENTREGA FORTNITE ══ */}
@@ -779,7 +742,7 @@ const Checkout = () => {
         ))}
 
         {/* ROBLOX */}
-        {(hasRoblox || hasGamePass) && (
+        {hasGamePass && (
           <div className="space-y-2 border border-red-500/20 bg-red-500/5 rounded-xl p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-red-400">🧱 Roblox</p>
             {hasGamePass && (
