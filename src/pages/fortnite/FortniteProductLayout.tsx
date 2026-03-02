@@ -270,7 +270,6 @@ const FortniteProductLayout = ({ title, products, infoBox, variant }: Props) => 
                 name:     product.name,
                 price:    cartPrice(product.pricePEN),
                 image:    product.image,
-                quantity: 1,
               })
             }
           />

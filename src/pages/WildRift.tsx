@@ -50,7 +50,7 @@ const WildRift = () => {
             </p>
 
             <button
-              onClick={() => addToCart({ id: product.id, name: product.name, price: cartPrice(product.basePen), image: product.image, category: CATEGORY })}
+              onClick={() => addToCart({ id: product.id, name: product.name, price: cartPrice(product.basePen), image: product.image})}
               className="w-full bg-blue-600 hover:bg-blue-500 transition py-3 rounded-xl font-bold cursor-pointer"
             >
               {t("product", "addToCart")}
